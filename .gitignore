@@ -1,0 +1,33 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# Node / TS
+node_modules/
+dist/
+build/
+out/
+.next/
+coverage/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Foundry / contracts
+cache/
+broadcast/
+artifacts/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

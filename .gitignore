@@ -31,3 +31,6 @@ artifacts/
 .DS_Store
 .idea/
 .vscode/
+
+# Local session handoff (not published)
+HANDOFF.md

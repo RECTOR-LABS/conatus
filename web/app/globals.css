@@ -128,3 +128,49 @@
     @apply font-sans;
   }
 }
+/* ===== Conatus forensic-terminal design layer ===== */
+
+.dark {
+  /* Phosphor-mint accent (Mantle palette x terminal heritage) */
+  --primary: oklch(0.88 0.13 172);
+  --primary-foreground: oklch(0.17 0.02 172);
+  --ring: oklch(0.88 0.13 172 / 60%);
+  --background: oklch(0.16 0.005 170);
+  --card: oklch(0.19 0.006 170);
+}
+
+/* Blueprint grid + top glow atmosphere */
+.bg-forensic {
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -10%, oklch(0.88 0.13 172 / 7%), transparent),
+    linear-gradient(to right, oklch(1 0 0 / 2.5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 2.5%) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+}
+
+/* Staggered load reveal */
+@keyframes conatus-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reveal { opacity: 0; animation: conatus-reveal 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.15s; }
+.reveal-3 { animation-delay: 0.25s; }
+.reveal-4 { animation-delay: 0.35s; }
+
+/* Live status pulse */
+@keyframes conatus-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px 1px oklch(0.88 0.13 172 / 55%); }
+  50% { opacity: 0.55; box-shadow: 0 0 2px 0 oklch(0.88 0.13 172 / 25%); }
+}
+.status-dot { animation: conatus-pulse 2.2s ease-in-out infinite; }
+
+/* Report-style section numeral */
+.section-tag {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: oklch(0.88 0.13 172 / 75%);
+}

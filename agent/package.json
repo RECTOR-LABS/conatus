@@ -9,7 +9,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "e2e": "tsx src/e2e/anchorVerdict.ts"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

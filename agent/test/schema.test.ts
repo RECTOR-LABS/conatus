@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { AuditReport } from "../src/schema";
+import { AuditReport, Finding } from "../src/schema";
 
 const validReport = {
   schemaVersion: "1" as const,
@@ -46,5 +46,24 @@ describe("AuditReport schema", () => {
     });
     expect(r.incomplete).toBe(true);
     expect(r.toolRuns.slither.status).toBe("error");
+  });
+
+  it("accepts a finding carrying an llm adjustedFrom audit trail", () => {
+    const f = {
+      id: "slither-reentrancy-eth-0",
+      title: "Reentrancy in withdraw()",
+      severity: "critical" as const,
+      confidence: "high" as const,
+      source: "slither" as const,
+      description: "External call before state update enables a drain.",
+      adjustedFrom: { severity: "high" as const, confidence: "medium" as const, by: "llm" as const, rationale: "Exploitable for full vault drain." },
+    };
+    expect(() => Finding.parse(f)).not.toThrow();
+    expect(Finding.parse(f).adjustedFrom?.severity).toBe("high");
+  });
+
+  it("still accepts a finding with no adjustedFrom (backward compatible)", () => {
+    const f = { id: "x", title: "t", severity: "low" as const, source: "slither" as const, description: "d" };
+    expect(() => Finding.parse(f)).not.toThrow();
   });
 });

@@ -50,6 +50,16 @@ export const Finding = z.object({
   description: z.string().min(1),
   /** Concrete suggested fix. */
   recommendation: z.string().optional(),
+  /** When LLM synthesis changed this finding's severity, the original tool call is preserved here
+   *  for auditability (Policy A: every AI adjustment stays verifiable). */
+  adjustedFrom: z
+    .object({
+      severity: Severity,
+      confidence: Confidence.optional(),
+      by: z.literal("llm"),
+      rationale: z.string().min(1),
+    })
+    .optional(),
 });
 export type Finding = z.infer<typeof Finding>;
 

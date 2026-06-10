@@ -1,4 +1,4 @@
-import "./loadEnv";
+import "../loadEnv";
 import { fileURLToPath } from "node:url";
 import { runAudit } from "../audit/runAudit";
 import { synthesizeAudit } from "../synthesis";

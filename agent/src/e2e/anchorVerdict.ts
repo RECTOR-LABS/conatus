@@ -3,15 +3,16 @@ import { fileURLToPath } from "node:url";
 import { runAudit } from "../audit/runAudit";
 import { synthesizeAudit } from "../synthesis";
 import { anchorAttestation, simulateAttest } from "../anchor";
-import { publicClientFor, MANTLE_SEPOLIA_ID } from "../chain";
+import { publicClientFor, chainFor, MANTLE_SEPOLIA_ID, MANTLE_MAINNET_ID } from "../chain";
 import { auditAttestationAbi } from "../abis";
 import { pinReport } from "../ipfs";
 import { accountFromEnv } from "../wallet";
 
 /**
  * Headless end-to-end: deterministic audit -> LLM synthesis -> on-chain attestation.
- * Run with `pnpm e2e`. This BROADCASTS a real transaction on Mantle Sepolia (spends MNT, writes
- * under our ERC-8004 agentId) — it is intentionally outside the test suite.
+ * Run with `pnpm e2e`. This BROADCASTS a real transaction on the Mantle chain selected by
+ * MANTLE_CHAIN_ID (5003 Sepolia default; 5000 mainnet spends real MNT, writes under our
+ * ERC-8004 agentId) — it is intentionally outside the test suite.
  */
 const VAULT = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
@@ -40,6 +41,11 @@ function requireEnv(name: string): string {
 async function main(): Promise<void> {
   const attestationAddress = requireEnv("ATTESTATION_ADDR") as `0x${string}`;
   const agentId = BigInt(requireEnv("AGENT_ID"));
+  const chainId = Number(process.env.MANTLE_CHAIN_ID ?? MANTLE_SEPOLIA_ID);
+  if (chainId !== MANTLE_SEPOLIA_ID && chainId !== MANTLE_MAINNET_ID) {
+    throw new Error(`MANTLE_CHAIN_ID=${process.env.MANTLE_CHAIN_ID} is not a Mantle chain (expected ${MANTLE_SEPOLIA_ID} or ${MANTLE_MAINNET_ID})`);
+  }
+  const chainName = chainFor(chainId).name;
   const slitherBin = process.env.SLITHER_BIN ?? fileURLToPath(new URL("../../../.venv/bin/slither", import.meta.url));
   // Force the data-URI fallback when the Pinata JWT is absent/placeholder.
   const rawJwt = process.env.IPFS_PINNING_JWT;
@@ -55,7 +61,7 @@ async function main(): Promise<void> {
   console.log(`     model=${synth.model}  riskScore=${synth.riskScore}  findings=${synth.findings.length}`);
   console.log(`     ${synth.summary}`);
 
-  console.log(`3/3  ${dryRun ? "Simulate attest (DRY RUN — eth_call, no broadcast)…" : "Anchor on-chain (Mantle Sepolia)…"}`);
+  console.log(`3/3  ${dryRun ? `Simulate attest (DRY RUN — eth_call on ${chainName}, no broadcast)…` : `Anchor on-chain (${chainName})…`}`);
   if (dryRun) {
     const pin = await pinReport(synth, { jwt: ipfsJwt });
     const account = accountFromEnv();
@@ -66,17 +72,18 @@ async function main(): Promise<void> {
       findingsURI: pin.uri,
       riskScore: synth.riskScore,
       agentId,
+      chainId,
     });
     console.log(`     pinned (backend=${pin.backend}); attest() simulated OK — would call ${sim.request.functionName}(…, riskScore=${synth.riskScore}, agentId=${agentId}). No state written.`);
     console.log("\n✓ DRY RUN: full pipeline validated (audit -> synthesis -> simulate). Ready for the live broadcast.");
     return;
   }
-  const res = await anchorAttestation(synth, { attestationAddress, agentId, ipfsJwt });
+  const res = await anchorAttestation(synth, { attestationAddress, agentId, ipfsJwt, chainId });
   console.log(`     tx:        ${res.txHash}`);
   console.log(`     explorer:  ${res.explorerUrl}`);
   console.log(`     ipfs:      ${res.findingsURI.slice(0, 64)}…  (backend=${res.ipfsBackend})`);
 
-  const pub = publicClientFor(MANTLE_SEPOLIA_ID);
+  const pub = publicClientFor(chainId);
   const [riskScore, findingsURI, onchainAgentId] = await pub.readContract({
     address: attestationAddress,
     abi: auditAttestationAbi,

@@ -1,44 +1,49 @@
 # Conatus demo — silent walkthrough shot list
 
-Target: **~2:45 final** (raw ~3:30, one speed-up edit) · no voice — the title cards narrate.
-DoraHacks requires ≥2:00 — the plan lands comfortably above even after compression.
+**4 blocks, 3 context switches.** Show first, explain after. No voice — the cards narrate.
+Target: raw ~3:05 → **~2:30 final** after the one speed-up edit. DoraHacks requires ≥2:00 — verify the final cut length before upload.
 
 ## Pre-recording checklist
 
 1. Load the Vault fixture into the clipboard: `pbcopy < /tmp/vault.sol`
-2. Chrome, one window, exactly **3 tabs** (use ⌘1/⌘2/⌘3 to switch):
-   - **⌘1** `docs/demo/cards.html` (open the file, press `F` for fullscreen-element… or just keep the tab — the cards fill the viewport)
+2. **Fresh Chrome window**, exactly **3 tabs** (⌘1/⌘2/⌘3):
+   - **⌘1** `docs/demo/cards.html` (or http://localhost:8077/cards.html) — on **card 1**
    - **⌘2** https://conatus.rectorspace.com (fresh load — staggered reveal plays)
    - **⌘3** https://mantlescan.xyz/tx/0xb7804b79e3bb239689c4b2428dafde152ab32f63c73563677e01bea8b00ddbaa (first MAINNET verdict)
-3. Hide bookmarks bar (⌘⇧B) · 100 % zoom · close other windows. Keep the URL bar visible — the live domain IS the credibility.
+3. Hide bookmarks bar (⌘⇧B) · 100 % zoom · no other windows. Keep the URL bar visible — the live domain IS the credibility.
 4. macOS: Do Not Disturb ON · ⌘⇧5 → *Record Entire Screen* → **microphone OFF** → Start.
 
-## Scenes (cards advance with → / space)
+## The four blocks
 
-| # | Where | What happens | ~Raw |
-|---|---|---|---|
-| 1 | ⌘1 card 1–2 | TITLE (let the pulse breathe) → THE CLAIM | 0:00–0:16 |
-| 2 | ⌘2 app | Scroll smoothly to the bottom **AgentCard**: identity #130 + the three reputation rows. Hold. | 0:16–0:30 |
-| 3 | ⌘1 card 3 | EXHIBIT A — the audit | 0:30–0:37 |
-| 4 | ⌘2 app | Scroll up · paste Vault (⌘V) · name `Vault` · anchor ON · **Run audit** · stage ticker runs (queued → slither → synthesis → anchoring) | 0:37–1:45 |
-| 5 | ⌘1 card 4 | EXHIBIT B — the verdict (switch as the ticker completes) | 1:45–1:52 |
-| 6 | ⌘2 app | Report: **87/100** · reentrancy escalated to CRITICAL · the AI-only `setOwner()` finding · the discarded-suggestions transparency note | 1:52–2:15 |
-| 7 | ⌘1 card 5 | EXHIBIT C — the anchor | 2:15–2:22 |
-| 8 | ⌘2 app | Click the **explorer tx link** in the report → MantleScan (Sepolia) tx page. Hold. | 2:22–2:32 |
-| 9 | ⌘1 card 6 | EXHIBIT D — the reputation (the 90 · 85 · 88 plate) | 2:32–2:42 |
-| 10 | ⌘3 | The **mainnet** verdict tx — real money rails. Hold. | 2:42–2:52 |
-| 11 | ⌘1 card 7 | MAINNET close — agentId 115, addresses, links. Hold 5 s. Stop recording. | 2:52–3:05+ |
+### Block 1 — setup · ⌘1 cards (0:00–0:22)
+Card 1 TITLE (~8 s, let the pulse breathe) → card 2 THE CLAIM (~8 s) → card 3 EXHIBIT A (~7 s).
+
+### Block 2 — the real thing, one continuous take · ⌘2 app (0:22–2:20 raw)
+| Beat | Action | ~Raw |
+|---|---|---|
+| Proof of the claim | Scroll smoothly to the bottom **AgentCard** — identity #130 + the three reputation rows. **Hold 12 s.** | 0:22–0:40 |
+| Submit | Scroll up · click source field · ⌘V · name `Vault` · anchor ON · **Run audit** | 0:40–0:55 |
+| Ticker | queued → slither → synthesis → anchoring (don't touch anything — this segment gets sped up) | 0:55–1:50 |
+| Verdict | Scroll the report slowly: **87/100** · reentrancy escalated to CRITICAL · the AI-only `setOwner()` finding · the discarded-suggestions note. **Linger ~30 s.** | 1:50–2:10 |
+| On-chain | Click the **explorer tx link** → MantleScan (Sepolia). **Hold 10 s.** | 2:10–2:20 |
+
+### Block 3 — significance recap · ⌘1 cards (2:20–2:45)
+Card 4 EXHIBIT B (~8 s) → card 5 EXHIBIT C (~8 s) → card 6 EXHIBIT D, the 90 · 85 · 88 plates (~9 s).
+
+### Block 4 — real money rails · ⌘3 then ⌘1 (2:45–3:05)
+Mainnet verdict tx — **hold 10 s** → ⌘1 card 7 MAINNET close — **hold 8 s** → stop recording.
 
 ## The one edit
 
-Scene 4's ticker wait (~45–60 s) → speed to **6–8×** in iMovie/CapCut (split clip at submit-click and at ticker-done, apply speed to the middle). Everything else stays real-time. Final ≈ 2:45.
+Block 2's ticker (~55 s) → speed to **6–8×** in iMovie/CapCut: split at *Run audit* click and at ticker completion, apply speed to the middle. Everything else stays real-time. Final ≈ 2:30 — **confirm it's ≥2:00**.
 
 ## Notes
 
-- Pre-flight verified today: full prod path returns riskScore 87 / 4 findings and anchors on-chain (job `6847bc72`, tx `0xc6af…7d4f`) — the flow will not surprise you mid-take.
-- If the LLM returns a different riskScore than 87 during the take, that's fine — Policy A is honest non-determinism; cards don't hard-code the live score.
+- Pre-flight verified (2026-06-12): full prod path returns riskScore 87 / 4 findings and anchors on-chain in ~30 s (job `6847bc72`, tx `0xc6af…7d4f`). A failed take costs nothing — Sepolia gas is free; just re-run.
+- If the live riskScore differs from 87, that's Policy A's honest non-determinism — the cards don't hard-code the live score.
+- Why no in-card simulation: Conatus's thesis is *verify, don't trust* — the live domain, real ticker, and resolving explorer links are the proof a simulation can't give.
 - Export 1080p+ MP4 → YouTube (unlisted is fine for DoraHacks) → link in the submission.
 
 ## Cowork mode (optional)
 
-CIPHER can drive every browser action via Chrome MCP (smooth scrolls, paste, clicks, tab switches) while you only run the screen recorder — say the word and we rehearse once before the take.
+CIPHER can drive every browser action via Chrome MCP while you record — but a human trackpad scroll reads more organic on camera; automated input looks robotic. Recommended: you drive with this list on a phone/second display, CIPHER on standby.

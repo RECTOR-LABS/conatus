@@ -40,6 +40,13 @@ export interface AnchorOptions {
   ipfsJwt?: string;
 }
 
+/** A mined-but-reverted attest must never pass silently into readback/verification. */
+export function assertReceiptSuccess(receipt: { status: "success" | "reverted" }, txUrl: string): void {
+  if (receipt.status !== "success") {
+    throw new Error(`attest tx reverted on-chain (status=${receipt.status}): ${txUrl}`);
+  }
+}
+
 export interface AnchorResult {
   txHash: `0x${string}`;
   findingsURI: string;
@@ -70,7 +77,8 @@ export async function anchorAttestation(report: AuditReport, opts: AnchorOptions
     account: wallet.account,
   });
   const txHash = await wallet.writeContract(request);
-  await publicClient.waitForTransactionReceipt({ hash: txHash });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  assertReceiptSuccess(receipt, explorerTxUrl(chainId, txHash));
 
   return {
     txHash,

@@ -83,15 +83,29 @@ async function main(): Promise<void> {
   console.log(`     explorer:  ${res.explorerUrl}`);
   console.log(`     ipfs:      ${res.findingsURI.slice(0, 64)}…  (backend=${res.ipfsBackend})`);
 
+  // Readback can race a load-balanced RPC pool (a node one block behind the receipt returns
+  // empty state) — retry briefly before treating it as a failure.
   const pub = publicClientFor(chainId);
-  const [riskScore, findingsURI, onchainAgentId] = await pub.readContract({
-    address: attestationAddress,
-    abi: auditAttestationAbi,
-    functionName: "getAttestation",
-    args: [res.targetHash],
-  });
-  console.log(`     readback:  riskScore=${riskScore}  agentId=${onchainAgentId}  uriLen=${findingsURI.length}`);
-  if (Number(riskScore) !== synth.riskScore || onchainAgentId !== agentId) {
+  let verdict: { riskScore: number; findingsURI: string; agentId: bigint } | undefined;
+  for (let attempt = 1; attempt <= 5 && !verdict; attempt++) {
+    const [riskScore, findingsURI, onchainAgentId] = await pub.readContract({
+      address: attestationAddress,
+      abi: auditAttestationAbi,
+      functionName: "getAttestation",
+      args: [res.targetHash],
+    });
+    if (findingsURI.length > 0) {
+      verdict = { riskScore: Number(riskScore), findingsURI, agentId: onchainAgentId };
+    } else if (attempt < 5) {
+      console.log(`     readback empty (attempt ${attempt}/5) — RPC node may lag the receipt; retrying in 2s…`);
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
+  }
+  if (!verdict) {
+    throw new Error(`Readback still empty after 5 attempts — verify ${res.explorerUrl} on the explorer before retrying.`);
+  }
+  console.log(`     readback:  riskScore=${verdict.riskScore}  agentId=${verdict.agentId}  uriLen=${verdict.findingsURI.length}`);
+  if (verdict.riskScore !== synth.riskScore || verdict.agentId !== agentId) {
     throw new Error("Readback mismatch — on-chain verdict does not match the synthesized report.");
   }
   console.log("\n✓ First on-chain AI verdict anchored and verified.");

@@ -22,6 +22,8 @@ const SEPOLIA = {
 } as const;
 
 const GITHUB = "https://github.com/RECTOR-LABS/conatus";
+// Demo video hosted on Vercel Blob (CDN-delivered; keeps the 5MB binary out of git).
+const VIDEO_URL = "https://jtystnlfdvkgnvne.public.blob.vercel-storage.com/conatus-demo.mp4";
 
 export const metadata: Metadata = {
   title: "Conatus — pitch · the first audit agent native to Mantle's ERC-8004 stack",
@@ -142,9 +144,9 @@ export default function PitchPage() {
             poster="/conatus-demo-poster.jpg"
             className="aspect-[1440/1084] w-full bg-black"
           >
-            <source src="/conatus-demo.mp4" type="video/mp4" />
+            <source src={VIDEO_URL} type="video/mp4" />
             Your browser does not support the video tag — {""}
-            <a href="/conatus-demo.mp4" className="text-primary underline">
+            <a href={VIDEO_URL} className="text-primary underline">
               download the demo
             </a>
             .

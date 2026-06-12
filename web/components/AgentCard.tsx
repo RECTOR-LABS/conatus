@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { publicClient } from "@/lib/wallet";
 import { identityRegistryAbi, reputationRegistryAbi } from "@/lib/abis";
-import { AGENT_ID, IDENTITY_REGISTRY, REPUTATION_REGISTRY, explorerAddress } from "@/lib/constants";
+import { AGENT_ID, CHAIN_NAME, IDENTITY_REGISTRY, REPUTATION_REGISTRY, explorerAddress } from "@/lib/constants";
 import { aggregateFeedback, type DimensionAggregate } from "@/lib/aggregate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +66,7 @@ export function AgentCard() {
           <CardTitle className="flex flex-wrap items-center gap-2 font-[family-name:var(--font-archivo)] text-base">
             <Fingerprint className="h-4 w-4 text-primary" />
             ERC-8004 agent #{AGENT_ID.toString()}
-            <Badge variant="outline" className="rounded-sm font-mono text-[10px]">Mantle Sepolia</Badge>
+            <Badge variant="outline" className="rounded-sm font-mono text-[10px]">{CHAIN_NAME}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">

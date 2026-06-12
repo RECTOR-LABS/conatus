@@ -1,7 +1,7 @@
 import { createWalletClient, createPublicClient, custom, http, type WalletClient } from "viem";
-import { mantleSepolia, RPC_URL, CHAIN_ID, EXPLORER_URL } from "./constants";
+import { mantleChain, CHAIN_NAME, RPC_URL, CHAIN_ID, EXPLORER_URL } from "./constants";
 
-export const publicClient = createPublicClient({ chain: mantleSepolia, transport: http(RPC_URL) });
+export const publicClient = createPublicClient({ chain: mantleChain, transport: http(RPC_URL) });
 
 type Eip1193 = { request(args: { method: string; params?: unknown[] }): Promise<unknown> };
 
@@ -11,7 +11,7 @@ function injected(): Eip1193 {
   return eth;
 }
 
-/** Connect the injected wallet and make sure it's on Mantle Sepolia (adds the chain if unknown). */
+/** Connect the injected wallet and make sure it's on the configured Mantle chain (adds it if unknown). */
 export async function connectWallet(): Promise<{ client: WalletClient; address: `0x${string}` }> {
   const eth = injected();
   const accounts = (await eth.request({ method: "eth_requestAccounts" })) as `0x${string}`[];
@@ -25,13 +25,13 @@ export async function connectWallet(): Promise<{ client: WalletClient; address: 
       method: "wallet_addEthereumChain",
       params: [{
         chainId: hexId,
-        chainName: "Mantle Sepolia Testnet",
+        chainName: CHAIN_NAME,
         nativeCurrency: { name: "Mantle", symbol: "MNT", decimals: 18 },
         rpcUrls: [RPC_URL],
         blockExplorerUrls: [EXPLORER_URL],
       }],
     });
   }
-  const client = createWalletClient({ account: address, chain: mantleSepolia, transport: custom(eth) });
+  const client = createWalletClient({ account: address, chain: mantleChain, transport: custom(eth) });
   return { client, address };
 }

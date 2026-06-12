@@ -4,7 +4,7 @@ import { useState } from "react";
 import { connectWallet } from "@/lib/wallet";
 import { buildFeedbackPayload, encodeFeedbackUri, FEEDBACK_DIMENSIONS, type FeedbackDimension } from "@/lib/feedback";
 import { reputationRegistryAbi } from "@/lib/abis";
-import { AGENT_ID, REPUTATION_REGISTRY, SITE_URL, explorerTx, mantleSepolia } from "@/lib/constants";
+import { AGENT_ID, REPUTATION_REGISTRY, SITE_URL, explorerTx, mantleChain } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,7 @@ export function RateAudit({ targetHash, attestationTx, riskScore }: RateAuditPro
         functionName: "giveFeedback",
         args: [AGENT_ID, BigInt(score), 0, dimension, targetHash, SITE_URL, uri, hash],
         account: address,
-        chain: mantleSepolia,
+        chain: mantleChain,
       });
       setTxHash(sent);
     } catch (e) {

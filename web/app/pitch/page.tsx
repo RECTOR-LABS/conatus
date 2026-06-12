@@ -189,7 +189,7 @@ export default function PitchPage() {
             value={`agentId ${MAINNET.agentId} · IdentityRegistry`}
             emphasis
           />
-          <ProofLink href={SITE_URL} label="Live app · Mantle Sepolia" value="conatus.rectorspace.com" />
+          <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" />
           <ProofLink href={GITHUB} label="Public source" value="github.com/RECTOR-LABS/conatus" />
           <ProofLink
             href={`${SEPOLIA.explorer}/address/${SEPOLIA.reputationRegistry}`}

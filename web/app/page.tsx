@@ -8,6 +8,7 @@ import { AuditProgress } from "@/components/AuditProgress";
 import { ReportView } from "@/components/ReportView";
 import { AgentCard } from "@/components/AgentCard";
 import { RateAudit } from "@/components/RateAudit";
+import { AGENT_ID, CHAIN_NAME, CHAIN_LABEL, ATTESTATION_ADDR, IDENTITY_REGISTRY, shortAddr } from "@/lib/constants";
 
 export default function Home() {
   const [jobId, setJobId] = useState<string | null>(null);
@@ -39,7 +40,7 @@ export default function Home() {
           </h1>
           <span className="flex items-center gap-2 font-mono text-[11px] tracking-[0.18em] text-muted-foreground">
             <span className="status-dot inline-block h-2 w-2 rounded-full bg-primary" />
-            AGENT #130 ONLINE
+            AGENT #{AGENT_ID.toString()} ONLINE
           </span>
         </div>
         <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -47,7 +48,7 @@ export default function Home() {
           every verdict anchored on-chain under a portable ERC-8004 identity that accrues reputation.
         </p>
         <p className="font-mono text-[11px] text-muted-foreground/70">
-          first-pass triage, not a formal audit · single-file Solidity · Mantle Sepolia
+          first-pass triage, not a formal audit · single-file Solidity · {CHAIN_NAME}
         </p>
       </header>
 
@@ -73,7 +74,7 @@ export default function Home() {
 
       <footer className="reveal reveal-4 border-t border-border/60 pt-4 pb-2">
         <p className="font-mono text-[11px] text-muted-foreground/70">
-          AuditAttestation 0x94f2…E040 · ERC-8004 IdentityRegistry 0x8004…BD9e · Mantle Sepolia (5003)
+          AuditAttestation {shortAddr(ATTESTATION_ADDR)} · ERC-8004 IdentityRegistry {shortAddr(IDENTITY_REGISTRY)} · {CHAIN_LABEL}
         </p>
       </footer>
     </main>

@@ -9,14 +9,20 @@ export const IDENTITY_REGISTRY = (process.env.NEXT_PUBLIC_IDENTITY_REGISTRY ?? "
 export const REPUTATION_REGISTRY = (process.env.NEXT_PUBLIC_REPUTATION_REGISTRY ?? "0x8004B663056A597Dffe9eCcC1965A193B7388713") as `0x${string}`;
 export const SITE_URL = "https://conatus.rectorspace.com";
 
-export const mantleSepolia = defineChain({
+// Network-derived labels — the single source of truth for all chain-specific UI text.
+export const IS_MAINNET = CHAIN_ID === 5000;
+export const CHAIN_NAME = IS_MAINNET ? "Mantle" : "Mantle Sepolia";
+export const CHAIN_LABEL = `${CHAIN_NAME} (${CHAIN_ID})`;
+
+export const mantleChain = defineChain({
   id: CHAIN_ID,
-  name: "Mantle Sepolia Testnet",
+  name: IS_MAINNET ? "Mantle" : "Mantle Sepolia Testnet",
   nativeCurrency: { name: "Mantle", symbol: "MNT", decimals: 18 },
   rpcUrls: { default: { http: [RPC_URL] } },
   blockExplorers: { default: { name: "MantleScan", url: EXPLORER_URL } },
-  testnet: true,
+  testnet: !IS_MAINNET,
 });
 
+export const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 export const explorerTx = (hash: string) => `${EXPLORER_URL}/tx/${hash}`;
 export const explorerAddress = (addr: string) => `${EXPLORER_URL}/address/${addr}`;

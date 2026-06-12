@@ -1,11 +1,12 @@
 import type { JobStatus } from "@/lib/types";
 import { CheckCircle2, Loader2, Circle } from "lucide-react";
+import { CHAIN_NAME } from "@/lib/constants";
 
 const STAGES: { key: JobStatus; label: string }[] = [
   { key: "queued", label: "Queued" },
   { key: "slither", label: "Static analysis — Slither" },
   { key: "synthesis", label: "AI synthesis — LLM triage" },
-  { key: "anchoring", label: "Anchoring on Mantle Sepolia" },
+  { key: "anchoring", label: `Anchoring on ${CHAIN_NAME}` },
 ];
 const ORDER: JobStatus[] = ["queued", "slither", "synthesis", "anchoring", "done"];
 

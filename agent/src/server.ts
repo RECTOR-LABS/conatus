@@ -6,6 +6,7 @@ import { createJobStore, QueueFullError, type Job, type JobStore, type StageRunn
 import { runAudit } from "./audit/runAudit";
 import { synthesizeAudit } from "./synthesis";
 import { anchorAttestation } from "./anchor";
+import { MANTLE_SEPOLIA_ID, MANTLE_MAINNET_ID } from "./chain";
 
 const VERSION = "0.1.0";
 const MAX_SOURCE_CHARS = 100_000;
@@ -28,6 +29,7 @@ export interface ServerOptions {
   token: string;
   allowedOrigin: string;
   agentId: string;
+  chainId: number;
   rateLimit?: RateLimitOptions;
 }
 
@@ -103,7 +105,7 @@ export function createServer(opts: ServerOptions): Server {
     }
 
     if (req.method === "GET" && url.pathname === "/healthz") {
-      send(200, { ok: true, version: VERSION, agentId: opts.agentId });
+      send(200, { ok: true, version: VERSION, agentId: opts.agentId, chainId: opts.chainId });
       return;
     }
 
@@ -203,6 +205,10 @@ async function main(): Promise<void> {
   };
   const attestationAddress = required("ATTESTATION_ADDR") as `0x${string}`;
   const agentId = required("AGENT_ID");
+  const chainId = Number(process.env.MANTLE_CHAIN_ID ?? MANTLE_SEPOLIA_ID);
+  if (chainId !== MANTLE_SEPOLIA_ID && chainId !== MANTLE_MAINNET_ID) {
+    throw new Error(`MANTLE_CHAIN_ID=${process.env.MANTLE_CHAIN_ID} is not a Mantle chain (expected ${MANTLE_SEPOLIA_ID} or ${MANTLE_MAINNET_ID})`);
+  }
   const token = required("CONATUS_API_TOKEN");
   const allowedOrigin = process.env.ALLOWED_ORIGIN ?? "https://conatus.rectorspace.com";
   const port = Number(process.env.PORT ?? 8787);
@@ -215,7 +221,7 @@ async function main(): Promise<void> {
     audit: (source, contractName) => runAudit(source, { contractName, slitherBin }),
     synthesize: (report, source) => synthesizeAudit(report, source),
     anchorReport: async (report) => {
-      const r = await anchorAttestation(report, { attestationAddress, agentId: BigInt(agentId), ipfsJwt });
+      const r = await anchorAttestation(report, { attestationAddress, agentId: BigInt(agentId), chainId, ipfsJwt });
       return { txHash: r.txHash, explorerUrl: r.explorerUrl, findingsURI: r.findingsURI, ipfsBackend: r.ipfsBackend };
     },
   };
@@ -225,10 +231,11 @@ async function main(): Promise<void> {
     token,
     allowedOrigin,
     agentId,
+    chainId,
     rateLimit: { capacity: 5, refillPerMs: 5 / (10 * 60 * 1000) },
   });
   server.listen(port, "0.0.0.0", () => {
-    console.log(`conatus agent service listening on :${port} (agentId ${agentId})`);
+    console.log(`conatus agent service listening on :${port} (agentId ${agentId}, chainId ${chainId})`);
   });
 }
 

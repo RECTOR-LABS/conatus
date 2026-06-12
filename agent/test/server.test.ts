@@ -39,6 +39,7 @@ async function boot(rate?: { capacity: number; refillPerMs: number }) {
     token: TOKEN,
     allowedOrigin: ORIGIN,
     agentId: "130",
+    chainId: 5003,
     rateLimit: rate,
   });
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
@@ -53,9 +54,10 @@ describe("agent HTTP service", () => {
     const base = await boot();
     const res = await fetch(`${base}/healthz`);
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { ok: boolean; agentId: string };
+    const body = (await res.json()) as { ok: boolean; agentId: string; chainId: number };
     expect(body.ok).toBe(true);
     expect(body.agentId).toBe("130");
+    expect(body.chainId).toBe(5003);
   });
 
   it("rejects a missing/bad token with 401", async () => {

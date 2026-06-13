@@ -23,6 +23,9 @@ export const mantleChain = defineChain({
   testnet: !IS_MAINNET,
 });
 
+// Max characters accepted in the audit source box (paste / upload / example).
+export const MAX_SOURCE_CHARS = 100_000;
+
 export const shortAddr = (addr: string) => `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 export const explorerTx = (hash: string) => `${EXPLORER_URL}/tx/${hash}`;
 export const explorerAddress = (addr: string) => `${EXPLORER_URL}/address/${addr}`;

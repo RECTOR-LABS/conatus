@@ -34,3 +34,7 @@ artifacts/
 
 # Local session handoff (not published)
 HANDOFF.md
+
+# Local planning artifacts (specs/plans) — kept private during the competition
+docs/superpowers/
+.superpowers/

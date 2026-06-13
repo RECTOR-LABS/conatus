@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" width="1600" height="520">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
+      .d { font-family: 'Archivo', sans-serif; }
+      .m { font-family: 'JetBrains Mono', monospace; }
+    </style>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.15"/>
+      <stop offset="60%" stop-color="#5eead4" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="520" fill="#0a0e0d"/>
+  <rect width="1600" height="520" fill="url(#grid)"/>
+  <ellipse cx="820" cy="-40" rx="860" ry="320" fill="url(#glow)"/>
+  <circle cx="1300" cy="250" r="300" fill="none" stroke="#5eead4" stroke-opacity="0.05" stroke-width="1.5"/>
+  <circle cx="1300" cy="250" r="220" fill="none" stroke="#5eead4" stroke-opacity="0.05" stroke-width="1.5"/>
+
+  <!-- corner registration ticks -->
+  <g stroke="#5eead4" stroke-opacity="0.55" stroke-width="1.5" fill="none">
+    <path d="M40 58 V40 H58"/>
+    <path d="M1560 58 V40 H1542"/>
+    <path d="M40 462 V480 H58"/>
+    <path d="M1560 462 V480 H1542"/>
+  </g>
+
+  <!-- eyebrow -->
+  <circle cx="86" cy="106" r="5" fill="#5eead4"/>
+  <text x="104" y="112" class="m" font-size="18" letter-spacing="5" fill="#5eead4" fill-opacity="0.9">LIVE ON MANTLE MAINNET · ERC-8004 AGENT #115</text>
+
+  <!-- wordmark -->
+  <text x="76" y="246" class="d" font-size="126" font-weight="800" letter-spacing="-3" fill="#f3f5f4">CONATUS<tspan fill="#5eead4">_</tspan></text>
+
+  <!-- taglines -->
+  <text x="80" y="306" class="d" font-size="34" font-weight="700" fill="#cfd8d4">Autonomous on-chain AI smart-contract audit agent for Mantle.</text>
+  <text x="80" y="352" class="d" font-size="25" font-weight="600" fill="#94a39d">Tools give you a <tspan fill="#f3f5f4">report</tspan>. Conatus gives you a <tspan fill="#5eead4" font-weight="700">record</tspan>.</text>
+
+  <!-- fact strip -->
+  <line x1="80" y1="406" x2="1520" y2="406" stroke="#ffffff" stroke-opacity="0.1"/>
+  <g class="m" font-size="16" fill="#cfd8d4">
+    <text x="80" y="440">audit <tspan fill="#5eead4">→</tspan> verdict <tspan fill="#5eead4">→</tspan> on-chain anchor</text>
+    <text x="540" y="440" fill="#7e8c86">·</text>
+    <text x="564" y="440">ERC-8004 <tspan fill="#5eead4">identity + reputation</tspan></text>
+    <text x="1010" y="440" fill="#7e8c86">·</text>
+    <text x="1034" y="440">every verdict <tspan fill="#5eead4">recomputable</tspan>, paid in real MNT</text>
+  </g>
+</svg>

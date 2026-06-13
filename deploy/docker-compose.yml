@@ -1,0 +1,14 @@
+name: conatus
+services:
+  agent:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: conatus-agent
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    env_file:
+      - ../.env
+    environment:
+      PORT: "8787"

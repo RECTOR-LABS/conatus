@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" width="1600" height="980">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap');
+      .d { font-family: 'Archivo', sans-serif; }
+      .m { font-family: 'JetBrains Mono', monospace; }
+    </style>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5eead4" stop-opacity="0.12"/>
+      <stop offset="55%" stop-color="#5eead4" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.03" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8" fill="none" stroke="#5eead4" stroke-width="1.6"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect width="1600" height="980" fill="#0a0e0d"/>
+  <rect width="1600" height="980" fill="url(#grid)"/>
+  <ellipse cx="800" cy="-40" rx="780" ry="320" fill="url(#glow)"/>
+
+  <!-- corner ticks -->
+  <g stroke="#5eead4" stroke-opacity="0.55" stroke-width="1.5" fill="none">
+    <path d="M40 58 V40 H58"/>
+    <path d="M1560 58 V40 H1542"/>
+    <path d="M40 922 V940 H58"/>
+    <path d="M1560 922 V940 H1542"/>
+  </g>
+
+  <!-- eyebrow -->
+  <circle cx="86" cy="80" r="5" fill="#5eead4"/>
+  <text x="104" y="86" class="m" font-size="17" letter-spacing="4" fill="#5eead4" fill-opacity="0.9">ARCHITECTURE · ONE POST → A VERDICT THAT LIVES ON-CHAIN</text>
+
+  <!-- ============ CLIENT TIER ============ -->
+  <!-- arrows between client boxes -->
+  <line x1="528" y1="176" x2="612" y2="176" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="988" y1="176" x2="1072" y2="176" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- Developer -->
+  <rect x="160" y="120" width="360" height="112" rx="12" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="186" y="158" class="m" font-size="13" letter-spacing="3" fill="#5eead4" fill-opacity="0.8">01 · INPUT</text>
+  <text x="186" y="194" class="d" font-size="27" font-weight="800" fill="#f3f5f4">Developer</text>
+  <text x="186" y="220" class="m" font-size="14" fill="#94a39d">pastes Solidity source</text>
+
+  <!-- Frontend -->
+  <rect x="620" y="120" width="360" height="112" rx="12" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="646" y="158" class="m" font-size="13" letter-spacing="3" fill="#5eead4" fill-opacity="0.8">02 · WEB</text>
+  <text x="646" y="194" class="d" font-size="27" font-weight="800" fill="#f3f5f4">Frontend</text>
+  <text x="646" y="220" class="m" font-size="14" fill="#94a39d">Next.js · Vercel</text>
+
+  <!-- Agent API -->
+  <rect x="1080" y="120" width="360" height="112" rx="12" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="1106" y="158" class="m" font-size="13" letter-spacing="3" fill="#5eead4" fill-opacity="0.8">03 · SERVICE</text>
+  <text x="1106" y="194" class="d" font-size="27" font-weight="800" fill="#f3f5f4">Agent API</text>
+  <text x="1106" y="220" class="m" font-size="14" fill="#94a39d">Node · Docker · VPS · POST /audits</text>
+
+  <!-- connector to agent panel -->
+  <line x1="800" y1="232" x2="800" y2="298" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- ============ AGENT PANEL ============ -->
+  <rect x="120" y="300" width="1360" height="250" rx="14" fill="#0c1110" stroke="#5eead4" stroke-opacity="0.30"/>
+  <text x="150" y="338" class="m" font-size="13" letter-spacing="3" fill="#5eead4">CONATUS AGENT — THE AUDIT LOOP · one call, no human in the loop</text>
+
+  <!-- stage arrows -->
+  <line x1="540" y1="432" x2="612" y2="432" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="1010" y1="432" x2="1082" y2="432" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- stage 1: runAudit -->
+  <rect x="150" y="372" width="380" height="120" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="174" y="406" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">DETERMINISTIC</text>
+  <text x="174" y="438" class="d" font-size="25" font-weight="800" fill="#f3f5f4">runAudit</text>
+  <text x="174" y="466" class="m" font-size="13" fill="#94a39d">slither_scan ∥ mantle_gas_review</text>
+  <text x="174" y="484" class="m" font-size="13" fill="#94a39d">→ merged findings</text>
+
+  <!-- stage 2: synthesis -->
+  <rect x="620" y="372" width="390" height="120" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="644" y="406" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">LLM · POLICY A</text>
+  <text x="644" y="438" class="d" font-size="25" font-weight="800" fill="#f3f5f4">synthesis</text>
+  <text x="644" y="466" class="m" font-size="13" fill="#94a39d">Sonnet 4.6 triages · cites every line</text>
+  <text x="644" y="484" class="m" font-size="13" fill="#94a39d">reclassify · dedup · add — no score</text>
+
+  <!-- stage 3: scoring -->
+  <rect x="1090" y="372" width="360" height="120" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="1114" y="406" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">DETERMINISTIC</text>
+  <text x="1114" y="438" class="d" font-size="25" font-weight="800" fill="#f3f5f4">scoring</text>
+  <text x="1114" y="466" class="m" font-size="13" fill="#94a39d">rubric → riskScore 0–100</text>
+  <text x="1114" y="484" class="m" font-size="13" fill="#94a39d">recomputable by anyone</text>
+
+  <!-- integrity note -->
+  <text x="150" y="528" class="m" font-size="13" fill="#d8a657">⚠ a tool failure returns INCOMPLETE — never a fabricated clean pass</text>
+
+  <!-- connector to mantle panel -->
+  <line x1="800" y1="550" x2="800" y2="606" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="816" y="584" class="m" font-size="13" fill="#94a39d">pin report → anchor verdict</text>
+
+  <!-- ============ MANTLE PANEL ============ -->
+  <rect x="120" y="608" width="1360" height="302" rx="14" fill="#0c1110" stroke="#5eead4" stroke-opacity="0.45"/>
+  <text x="150" y="646" class="m" font-size="13" letter-spacing="3" fill="#5eead4">MANTLE · 5000 — ON-CHAIN · the verdict is itself a callable AI function</text>
+
+  <!-- row 1 arrows -->
+  <line x1="458" y1="722" x2="532" y2="722" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <line x1="1028" y1="722" x2="1052" y2="722" stroke="#5eead4" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+  <!-- IPFS -->
+  <rect x="150" y="674" width="300" height="96" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="174" y="706" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">STORAGE</text>
+  <text x="174" y="734" class="d" font-size="22" font-weight="800" fill="#f3f5f4">IPFS pin</text>
+  <text x="174" y="756" class="m" font-size="13" fill="#94a39d">findingsURI + keccak hash</text>
+
+  <!-- AuditAttestation -->
+  <rect x="540" y="674" width="488" height="96" rx="10" fill="#0f1413" stroke="#5eead4" stroke-opacity="0.4"/>
+  <text x="564" y="706" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">VERDICT · onlyAttester</text>
+  <text x="564" y="734" class="d" font-size="22" font-weight="800" fill="#f3f5f4">AuditAttestation.attest()</text>
+  <text x="564" y="756" class="m" font-size="13" fill="#94a39d">targetHash · findingsURI · riskScore · agentId</text>
+
+  <!-- Mantlescan -->
+  <rect x="1052" y="674" width="378" height="96" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="1076" y="706" class="m" font-size="12" letter-spacing="2" fill="#5eead4">✓ VERIFIED</text>
+  <text x="1076" y="734" class="d" font-size="22" font-weight="800" fill="#f3f5f4">Mantlescan tx</text>
+  <text x="1076" y="756" class="m" font-size="13" fill="#94a39d">0xb780…dbaa · real MNT</text>
+
+  <!-- agentId feed: identity -> attest -->
+  <line x1="655" y1="828" x2="655" y2="772" stroke="#5eead4" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="668" y="800" class="m" font-size="12" fill="#5eead4" fill-opacity="0.85">agentId</text>
+
+  <!-- Identity -->
+  <rect x="540" y="828" width="240" height="74" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="560" y="856" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">ERC-8004</text>
+  <text x="560" y="884" class="d" font-size="20" font-weight="800" fill="#f3f5f4">Identity · <tspan fill="#5eead4">#115</tspan></text>
+
+  <!-- Reputation -->
+  <rect x="820" y="828" width="610" height="74" rx="10" fill="#0f1413" stroke="#ffffff" stroke-opacity="0.10"/>
+  <text x="844" y="856" class="m" font-size="12" letter-spacing="2" fill="#5eead4" fill-opacity="0.8">ERC-8004</text>
+  <text x="844" y="884" class="d" font-size="20" font-weight="800" fill="#f3f5f4">Reputation <tspan class="m" font-size="13" font-weight="500" fill="#94a39d">· giveFeedback → accuracy · coverage · actionability</tspan></text>
+
+  <!-- feedback loop: verdict -> reputation (dashed elbow, clear of all labels) -->
+  <path d="M820 804 H1100 V824" fill="none" stroke="#5eead4" stroke-opacity="0.5" stroke-width="1.4" stroke-dasharray="5 5" marker-end="url(#arrow)"/>
+  <text x="822" y="795" class="m" font-size="12" fill="#5eead4" fill-opacity="0.7">consumers rate each verdict</text>
+</svg>

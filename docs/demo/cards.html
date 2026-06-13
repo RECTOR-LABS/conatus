@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conatus — demo cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: oklch(0.16 0.005 170);
+    --card: oklch(0.19 0.006 170);
+    --fg: oklch(0.985 0 0);
+    --muted: oklch(0.708 0 0);
+    --mint: oklch(0.88 0.13 172);
+    --mint-dim: oklch(0.88 0.13 172 / 75%);
+    --mint-faint: oklch(0.88 0.13 172 / 14%);
+    --border: oklch(1 0 0 / 10%);
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "Archivo", sans-serif;
+    overflow: hidden;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% -10%, oklch(0.88 0.13 172 / 7%), transparent),
+      linear-gradient(to right, oklch(1 0 0 / 2.5%) 1px, transparent 1px),
+      linear-gradient(to bottom, oklch(1 0 0 / 2.5%) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
+  }
+  .frame {
+    position: fixed; inset: 24px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  /* Blueprint registration ticks */
+  .tick { position: fixed; width: 17px; height: 17px; color: var(--mint-dim); }
+  .tick::before, .tick::after { content: ""; position: absolute; background: currentColor; }
+  .tick::before { left: 8px; top: 0; width: 1px; height: 17px; }
+  .tick::after { top: 8px; left: 0; height: 1px; width: 17px; }
+  .tick.tl { top: 20px; left: 20px; } .tick.tr { top: 20px; right: 20px; }
+  .tick.bl { bottom: 20px; left: 20px; } .tick.br { bottom: 20px; right: 20px; }
+
+  .slide { display: none; max-width: 1060px; margin: 0 auto; padding: 0 48px; width: 100%; }
+  .slide.active { display: block; }
+
+  .tag {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--mint-dim); margin-bottom: 28px;
+  }
+  .tag .dot {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mint); margin-right: 10px; vertical-align: 1px;
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px 1px oklch(0.88 0.13 172 / 55%); }
+    50% { opacity: 0.55; box-shadow: 0 0 2px 0 oklch(0.88 0.13 172 / 25%); }
+  }
+  h1 {
+    font-weight: 800; letter-spacing: -0.02em; line-height: 1.02;
+    font-size: clamp(3rem, 7.2vw, 6rem); margin-bottom: 30px;
+  }
+  h1 .mint { color: var(--mint); }
+  .lede {
+    font-weight: 500; color: var(--muted); line-height: 1.5;
+    font-size: clamp(1.15rem, 2vw, 1.6rem); max-width: 48ch; margin-bottom: 40px;
+  }
+  .lede strong { color: var(--fg); font-weight: 600; }
+  .rows { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--border); }
+  .row {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 24px;
+    padding: 14px 2px; border-bottom: 1px solid var(--border);
+    font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+  }
+  .row .k { color: var(--muted); font-weight: 500; }
+  .row .v { font-family: var(--mono); font-size: 0.92em; text-align: right; }
+  .row .v.mint { color: var(--mint); }
+  .scores { display: flex; gap: 18px; margin: 8px 0 40px; flex-wrap: wrap; }
+  .score {
+    flex: 1; min-width: 200px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 22px 24px;
+  }
+  .score .n {
+    font-family: var(--mono); font-size: clamp(2.4rem, 4.4vw, 3.6rem);
+    font-weight: 700; color: var(--mint); line-height: 1;
+  }
+  .score .l {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted); margin-top: 10px;
+  }
+  .foot {
+    position: fixed; left: 48px; right: 48px; bottom: 34px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .foot .mint { color: var(--mint-dim); }
+  .reveal { opacity: 0; animation: reveal 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+  .r1 { animation-delay: 0.05s; } .r2 { animation-delay: 0.18s; }
+  .r3 { animation-delay: 0.31s; } .r4 { animation-delay: 0.44s; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  kbd {
+    font-family: var(--mono); border: 1px solid var(--border); border-radius: 4px;
+    padding: 1px 6px; font-size: 0.85em; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+
+<div class="frame">
+
+  <!-- 1 · TITLE -->
+  <section class="slide" data-foot="conatus.rectorspace.com">
+    <div class="tag reveal r1"><span class="dot"></span>LIVE ON MANTLE MAINNET · ERC-8004 AGENT #115</div>
+    <h1 class="reveal r2">CONATUS<span class="mint">_</span></h1>
+    <p class="lede reveal r3">An autonomous AI smart-contract auditor with an <strong>on-chain identity</strong>, <strong>on-chain verdicts</strong>, and an <strong>on-chain reputation</strong> it must defend.</p>
+    <div class="tag reveal r4">SILENT WALKTHROUGH · ~3 MIN · ADVANCE WITH <kbd>→</kbd></div>
+  </section>
+
+  <!-- 2 · THE CLAIM -->
+  <section class="slide" data-foot="why it's different">
+    <div class="tag reveal r1">01 / THE CLAIM</div>
+    <h1 class="reveal r2">Tools give you a report.<br />Conatus gives you a <span class="mint">record.</span></h1>
+    <div class="rows reveal r3">
+      <div class="row"><span class="k">Every verdict</span><span class="v">an on-chain transaction, not a PDF</span></div>
+      <div class="row"><span class="k">Every auditor</span><span class="v">an ERC-8004 identity (agentId), not an API key</span></div>
+      <div class="row"><span class="k">Every rating</span><span class="v mint">third-party, audit-domain, on the ReputationRegistry</span></div>
+    </div>
+  </section>
+
+  <!-- 3 · EXHIBIT A — submit -->
+  <section class="slide" data-foot="next: live app footage">
+    <div class="tag reveal r1">02 / EXHIBIT A — THE AUDIT</div>
+    <h1 class="reveal r2">A deliberately<br />vulnerable <span class="mint">Vault.</span></h1>
+    <p class="lede reveal r3">We paste the source and submit. <strong>Slither</strong> × <strong>Mantle gas heuristics</strong> × <strong>LLM synthesis</strong> — watch the live stage ticker.</p>
+    <div class="tag reveal r4">FOOTAGE NOTE · ANALYSIS SEGMENT TIME-COMPRESSED</div>
+  </section>
+
+  <!-- 4 · EXHIBIT B — verdict -->
+  <section class="slide" data-foot="ai adjustments are auditable">
+    <div class="tag reveal r1">03 / EXHIBIT B — THE VERDICT</div>
+    <h1 class="reveal r2">The AI caught what<br />the tools <span class="mint">missed.</span></h1>
+    <div class="rows reveal r3">
+      <div class="row"><span class="k">Reentrancy in withdraw()</span><span class="v">escalated to CRITICAL by the AI</span></div>
+      <div class="row"><span class="k">Unprotected setOwner()</span><span class="v mint">found by the AI — invisible to the tools</span></div>
+      <div class="row"><span class="k">Every adjustment</span><span class="v">recorded (adjustedFrom) · uncited suggestions discarded</span></div>
+    </div>
+  </section>
+
+  <!-- 5 · EXHIBIT C — anchor -->
+  <section class="slide" data-foot="verifiable by anyone">
+    <div class="tag reveal r1">04 / EXHIBIT C — THE ANCHOR</div>
+    <h1 class="reveal r2">A verdict you can<br /><span class="mint">cast call.</span></h1>
+    <div class="rows reveal r3">
+      <div class="row"><span class="k">getAttestation(targetHash)</span><span class="v">riskScore · findings URI · agentId</span></div>
+      <div class="row"><span class="k">The score</span><span class="v">recomputable from the published findings</span></div>
+      <div class="row"><span class="k">The author</span><span class="v mint">bound to ERC-8004 agentId — forever</span></div>
+    </div>
+  </section>
+
+  <!-- 6 · EXHIBIT D — reputation -->
+  <section class="slide" data-foot="zero prior art · audit-domain reputation on erc-8004">
+    <div class="tag reveal r1">05 / EXHIBIT D — THE REPUTATION</div>
+    <h1 class="reveal r2">Rated on-chain.<br />By <span class="mint">someone else.</span></h1>
+    <div class="scores reveal r3">
+      <div class="score"><div class="n">90</div><div class="l">audit : accuracy</div></div>
+      <div class="score"><div class="n">85</div><div class="l">audit : coverage</div></div>
+      <div class="score"><div class="n">88</div><div class="l">audit : actionability</div></div>
+    </div>
+    <p class="lede reveal r4">The registry <strong>blocks self-feedback on-chain</strong> — Conatus cannot rate itself. These scores are provably third-party.</p>
+  </section>
+
+  <!-- 7 · MAINNET / CLOSE -->
+  <section class="slide" data-foot="#MantleAIHackathon">
+    <div class="tag reveal r1"><span class="dot"></span>06 / MAINNET — REAL MONEY RAILS</div>
+    <h1 class="reveal r2">Live on Mantle<br /><span class="mint">mainnet.</span></h1>
+    <div class="rows reveal r3">
+      <div class="row"><span class="k">ERC-8004 identity</span><span class="v mint">agentId 115 · registered Jun 11 2026</span></div>
+      <div class="row"><span class="k">First mainnet verdict</span><span class="v">riskScore 87 · tx 0xb780…dbaa</span></div>
+      <div class="row"><span class="k">AuditAttestation</span><span class="v">0x94f2…E040 — same address, both chains</span></div>
+      <div class="row"><span class="k">Try it</span><span class="v mint">conatus.rectorspace.com · github.com/RECTOR-LABS/conatus</span></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="foot"><span>CONATUS · FORENSIC RECORD</span><span class="mint" id="footNote"></span><span id="counter"></span></div>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  const counter = document.getElementById("counter");
+  const footNote = document.getElementById("footNote");
+  let i = 0;
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle("active", k === i));
+    // re-trigger the staggered reveals on every slide change
+    slides[i].querySelectorAll(".reveal").forEach((el) => {
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = "";
+    });
+    counter.textContent = `${i + 1} / ${slides.length}`;
+    footNote.textContent = slides[i].dataset.foot ?? "";
+  }
+  addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") show(i + 1);
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") show(i - 1);
+    else if (e.key.toLowerCase() === "f") document.documentElement.requestFullscreen?.();
+  });
+  show(0);
+</script>
+</body>
+</html>

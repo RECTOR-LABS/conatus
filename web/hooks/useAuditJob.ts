@@ -12,10 +12,17 @@ export function useAuditJob(id: string | null, opts: { intervalMs?: number } = {
   const [error, setError] = useState<string | null>(null);
   const failures = useRef(0);
 
-  useEffect(() => {
-    if (!id) return;
+  // Reset state when the polled id changes — done during render (not inside the
+  // effect) per React's "adjusting state on a prop change" pattern.
+  const [trackedId, setTrackedId] = useState(id);
+  if (id !== trackedId) {
+    setTrackedId(id);
     setJob(null);
     setError(null);
+  }
+
+  useEffect(() => {
+    if (!id) return;
     failures.current = 0;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;

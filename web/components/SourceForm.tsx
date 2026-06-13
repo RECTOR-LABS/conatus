@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { ExampleChips } from "@/components/ExampleChips";
 import { MAX_SOURCE_CHARS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import type { Example } from "@/lib/examples";
 
 function deriveName(filename: string): string {
   const base = filename.split(/[/\\]/).pop() ?? filename;
@@ -100,7 +99,13 @@ export function SourceForm({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <ExampleChips onPick={(ex: Example) => setName(ex.name)} />
+        <ExampleChips
+          onLoad={(ex) => {
+            setSource(ex.source);
+            setName(ex.name);
+            setFileError(null);
+          }}
+        />
         <Button
           type="button"
           variant="outline"

@@ -1,14 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SourceForm } from "@/components/SourceForm";
 
-beforeEach(() => {
-  Object.defineProperty(navigator, "clipboard", {
-    value: { writeText: vi.fn().mockResolvedValue(undefined) },
-    configurable: true,
-  });
-});
 afterEach(() => {
   vi.restoreAllMocks();
 });
@@ -72,6 +66,14 @@ describe("SourceForm", () => {
 
   it("renders the example chips", () => {
     render(<SourceForm onSubmit={vi.fn()} disabled={false} />);
-    expect(screen.getByRole("button", { name: /copy vault/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /load vault/i })).toBeInTheDocument();
+  });
+
+  it("loads an example into the box and sets the name on chip click", async () => {
+    const user = userEvent.setup();
+    render(<SourceForm onSubmit={vi.fn()} disabled={false} />);
+    await user.click(screen.getByRole("button", { name: /load vault/i }));
+    expect((screen.getByLabelText("Solidity source") as HTMLTextAreaElement).value).toContain("contract Vault");
+    expect(screen.getByLabelText("Contract name")).toHaveValue("Vault");
   });
 });

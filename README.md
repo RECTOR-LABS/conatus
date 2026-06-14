@@ -6,7 +6,7 @@
   <a href="https://conatus.rectorspace.com"><img src="https://img.shields.io/badge/live-conatus.rectorspace.com-5eead4?style=flat-square&labelColor=0a0e0d" alt="Live app"></a>
   <a href="https://mantlescan.xyz/address/0x94f22E008d0a8825850491170d97ba487Ed9E040"><img src="https://img.shields.io/badge/Mantle-mainnet%205000-5eead4?style=flat-square&labelColor=0a0e0d" alt="Mantle mainnet 5000"></a>
   <img src="https://img.shields.io/badge/ERC--8004-agent%20%23115-5eead4?style=flat-square&labelColor=0a0e0d" alt="ERC-8004 agent #115">
-  <img src="https://img.shields.io/badge/tests-85%20passing-3fb950?style=flat-square&labelColor=0a0e0d" alt="85 tests passing">
+  <img src="https://img.shields.io/badge/tests-98%20passing-3fb950?style=flat-square&labelColor=0a0e0d" alt="98 tests passing">
   <img src="https://img.shields.io/badge/license-MIT-7e8c86?style=flat-square&labelColor=0a0e0d" alt="MIT license">
 </p>
 

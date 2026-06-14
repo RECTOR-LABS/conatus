@@ -14,5 +14,8 @@ mantle_sepolia = "${MANTLE_RPC_URL}"
 mantle = "${MANTLE_MAINNET_RPC_URL}"
 
 [etherscan]
-mantle_sepolia = { key = "${MANTLESCAN_API_KEY}", url = "https://api-sepolia.mantlescan.xyz/api", chain = 5003 }
-mantle = { key = "${MANTLESCAN_API_KEY}", url = "https://api.mantlescan.xyz/api", chain = 5000 }
+# Etherscan API V2 (unified multichain). The legacy per-explorer V1 endpoints
+# (api*.mantlescan.xyz/api) were deprecated; one Etherscan key now serves all chains.
+# The chainid must be in the URL — forge does not auto-append it to an explicit verifier URL.
+mantle_sepolia = { key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=5003", chain = 5003 }
+mantle = { key = "${ETHERSCAN_API_KEY}", url = "https://api.etherscan.io/v2/api?chainid=5000", chain = 5000 }

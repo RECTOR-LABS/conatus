@@ -38,3 +38,7 @@ HANDOFF.md
 # Local planning artifacts (specs/plans) — kept private during the competition
 docs/superpowers/
 .superpowers/
+
+# Agent skills (installed via `skills add` / `railway skills`) — local tooling, not project code
+.agents/
+skills-lock.json

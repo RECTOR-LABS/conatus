@@ -22,8 +22,8 @@ const SEPOLIA = {
 } as const;
 
 const GITHUB = "https://github.com/RECTOR-LABS/conatus";
-// Demo video hosted on Vercel Blob (CDN-delivered; keeps the 5MB binary out of git).
-const VIDEO_URL = "https://jtystnlfdvkgnvne.public.blob.vercel-storage.com/conatus-demo.mp4";
+// Demo video hosted on Vercel Blob (CDN-delivered; keeps the ~10MB binary out of git).
+const VIDEO_URL = "https://jtystnlfdvkgnvne.public.blob.vercel-storage.com/conatus-demo-narrated.mp4";
 
 export const metadata: Metadata = {
   title: "Conatus — pitch · the first audit agent native to Mantle's ERC-8004 stack",
@@ -153,8 +153,8 @@ export default function PitchPage() {
           </video>
         </div>
         <p className="mt-3 font-mono text-[11px] text-muted-foreground/70">
-          Silent walkthrough · paste a vulnerable Vault → live AI audit → on-chain verdict → ERC-8004 reputation. The
-          analysis segment is time-compressed.
+          Narrated walkthrough · what Conatus is, then paste a vulnerable Vault → live AI audit → on-chain verdict →
+          ERC-8004 reputation. The analysis segment is time-compressed.
         </p>
       </section>
 

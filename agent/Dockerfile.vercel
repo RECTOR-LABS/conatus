@@ -1,21 +1,38 @@
 # Dockerfile.vercel — conatus audit worker (Slither/forge toolchain).
 # Vercel autodetects Dockerfile.vercel at the service root and routes traffic to
-# the process listening on $PORT (see vercel.json services.worker.root = agent/).
-# Build context is assumed to be the worker service root (agent/) — CONFIRM in the
-# Task 1 spike; if Vercel uses the repo root instead, prefix COPY paths with agent/.
+# the process listening on $PORT (see vercel.json services.worker.root = agent/,
+# entrypoint = Dockerfile.vercel). Build context = the worker service root (agent/).
 FROM node:24-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 python3-venv python3-pip git curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Foundry (forge) — Slither compiles via a temp Foundry workspace per audit
+# Foundry (forge) — Slither compiles via a temp Foundry workspace per audit.
 RUN curl -L https://foundry.paradigm.xyz | bash && /root/.foundry/bin/foundryup
 ENV PATH="/root/.foundry/bin:${PATH}"
+# IMPORTANT: Vercel's container runtime RESETS $PATH at runtime (unlike Railway), so the
+# ENV PATH above is not honored when Slither spawns `forge` by name -> FileNotFoundError.
+# Symlink the Foundry binaries onto the standard PATH (/usr/local/bin) so Slither's
+# subprocess resolves them regardless of the runtime PATH.
+RUN ln -sf /root/.foundry/bin/forge  /usr/local/bin/forge  \
+ && ln -sf /root/.foundry/bin/cast   /usr/local/bin/cast   \
+ && ln -sf /root/.foundry/bin/anvil  /usr/local/bin/anvil  \
+ && ln -sf /root/.foundry/bin/chisel /usr/local/bin/chisel
+# Keep HOME stable so forge/svm find the solc cache warmed below at runtime.
+ENV HOME=/root
 
 # Slither in a venv (same layout as local: .venv/bin/slither)
 RUN python3 -m venv /app/.venv && /app/.venv/bin/pip install --no-cache-dir slither-analyzer
 ENV SLITHER_BIN=/app/.venv/bin/slither
+
+# Pre-warm solc for the target pragma so the first audit doesn't pay a solc download
+# (and doesn't depend on runtime network to binaries.soliditylang.org).
+RUN mkdir -p /tmp/warm/src \
+ && printf '[profile.default]\nsrc="src"\nout="out"\nevm_version="paris"\n' > /tmp/warm/foundry.toml \
+ && printf '// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\ncontract Warm { uint256 x; }\n' > /tmp/warm/src/Warm.sol \
+ && (cd /tmp/warm && forge build) \
+ && rm -rf /tmp/warm
 
 WORKDIR /app/agent
 RUN corepack enable

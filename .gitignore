@@ -42,3 +42,5 @@ docs/superpowers/
 # Agent skills (installed via `skills add` / `railway skills`) — local tooling, not project code
 .agents/
 skills-lock.json
+.vercel
+.env*

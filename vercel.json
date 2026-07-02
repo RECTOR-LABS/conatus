@@ -3,6 +3,9 @@
   "services": {
     "web": {
       "root": "web/",
+      "bindings": [
+        { "type": "service", "service": "worker", "format": "url", "env": "WORKER_URL" }
+      ],
       "functions": {
         "app/api/queues/run/route.ts": {
           "experimentalTriggers": [{ "type": "queue/v2beta", "topic": "audits" }]
@@ -11,7 +14,8 @@
     },
     "worker": {
       "runtime": "container",
-      "root": "agent/"
+      "root": "agent/",
+      "entrypoint": "Dockerfile.vercel"
     }
   },
   "rewrites": [{ "source": "/(.*)", "destination": { "service": "web" } }]

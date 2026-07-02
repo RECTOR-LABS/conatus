@@ -1,0 +1,18 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "web/",
+      "functions": {
+        "app/api/queues/run/route.ts": {
+          "experimentalTriggers": [{ "type": "queue/v2beta", "topic": "audits" }]
+        }
+      }
+    },
+    "worker": {
+      "runtime": "container",
+      "root": "agent/"
+    }
+  },
+  "rewrites": [{ "source": "/(.*)", "destination": { "service": "web" } }]
+}

@@ -1,11 +1,10 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import type { Server } from "node:http";
 import { createServer } from "../src/server";
-import { createJobStore, type StageRunner } from "../src/jobs";
+import type { StageRunner } from "../src/stageRunner";
 import type { AuditReport } from "../src/schema";
 
 const TOKEN = "test-token-0123456789abcdef";
-const ORIGIN = "https://conatus.rectorspace.com";
 
 const fakeReport = (): AuditReport => ({
   schemaVersion: "1",
@@ -33,15 +32,8 @@ const runner: StageRunner = {
 let server: Server;
 afterEach(() => new Promise<void>((r) => server?.close(() => r())));
 
-async function boot(rate?: { capacity: number; refillPerMs: number }) {
-  server = createServer({
-    store: createJobStore({ runner }),
-    token: TOKEN,
-    allowedOrigin: ORIGIN,
-    agentId: "130",
-    chainId: 5003,
-    rateLimit: rate,
-  });
+async function boot() {
+  server = createServer({ runner, token: TOKEN, agentId: "130", chainId: 5003 });
   await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
   const addr = server.address() as { port: number };
   return `http://127.0.0.1:${addr.port}`;
@@ -49,8 +41,8 @@ async function boot(rate?: { capacity: number; refillPerMs: number }) {
 
 const auth = { "content-type": "application/json", "x-api-token": TOKEN };
 
-describe("agent HTTP service", () => {
-  it("healthz is open and reports agentId", async () => {
+describe("agent worker HTTP service", () => {
+  it("healthz is open and reports agentId + chainId", async () => {
     const base = await boot();
     const res = await fetch(`${base}/healthz`);
     expect(res.status).toBe(200);
@@ -60,9 +52,9 @@ describe("agent HTTP service", () => {
     expect(body.chainId).toBe(5003);
   });
 
-  it("rejects a missing/bad token with 401", async () => {
+  it("rejects a missing/bad token on /run-audit with 401", async () => {
     const base = await boot();
-    const res = await fetch(`${base}/audits`, {
+    const res = await fetch(`${base}/run-audit`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ source: "contract A {}" }),
@@ -73,14 +65,14 @@ describe("agent HTTP service", () => {
 
   it("validates the body with zod (400 + field detail)", async () => {
     const base = await boot();
-    const res = await fetch(`${base}/audits`, { method: "POST", headers: auth, body: JSON.stringify({ nope: 1 }) });
+    const res = await fetch(`${base}/run-audit`, { method: "POST", headers: auth, body: JSON.stringify({ nope: 1 }) });
     expect(res.status).toBe(400);
     expect(((await res.json()) as { error: string }).error).toMatch(/source/);
   });
 
   it("rejects oversize source with 413", async () => {
     const base = await boot();
-    const res = await fetch(`${base}/audits`, {
+    const res = await fetch(`${base}/run-audit`, {
       method: "POST",
       headers: auth,
       body: JSON.stringify({ source: "x".repeat(100_001) }),
@@ -88,49 +80,40 @@ describe("agent HTTP service", () => {
     expect(res.status).toBe(413);
   });
 
-  it("accepts a job (202) and polls it to done with report + anchorResult", async () => {
+  it("runs the pipeline synchronously and returns 200 {report, anchor}", async () => {
     const base = await boot();
-    const post = await fetch(`${base}/audits`, {
+    const res = await fetch(`${base}/run-audit`, {
       method: "POST",
       headers: auth,
       body: JSON.stringify({ source: "contract A {}", contractName: "A" }),
     });
-    expect(post.status).toBe(202);
-    const { id } = (await post.json()) as { id: string };
-    await vi.waitFor(async () => {
-      const res = await fetch(`${base}/audits/${id}`, { headers: auth });
-      const body = (await res.json()) as {
-        status: string;
-        report: { riskScore: number };
-        anchorResult: { txHash: string };
-        source?: unknown;
-      };
-      expect(body.status).toBe("done");
-      expect(body.report.riskScore).toBe(87);
-      expect(body.anchorResult.txHash).toBe("0xt");
-      expect(body.source).toBeUndefined(); // source never echoes back
-    });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { report: { riskScore: number }; anchor: { txHash: string } };
+    expect(body.report.riskScore).toBe(87);
+    expect(body.anchor.txHash).toBe("0xt");
   });
 
-  it("unknown job id → 404", async () => {
+  it("skips anchor when anchor=false (no anchor in response)", async () => {
     const base = await boot();
-    const res = await fetch(`${base}/audits/00000000-0000-0000-0000-000000000000`, { headers: auth });
+    const res = await fetch(`${base}/run-audit`, {
+      method: "POST",
+      headers: auth,
+      body: JSON.stringify({ source: "contract A {}", contractName: "A", anchor: false }),
+    });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { report: unknown; anchor?: unknown };
+    expect(body.anchor).toBeUndefined();
+  });
+
+  it("unknown path → 404", async () => {
+    const base = await boot();
+    const res = await fetch(`${base}/audits`, { headers: auth });
     expect(res.status).toBe(404);
   });
 
-  it("rate-limits POSTs per IP with 429", async () => {
-    const base = await boot({ capacity: 2, refillPerMs: 0 });
-    const body = JSON.stringify({ source: "contract A {}" });
-    await fetch(`${base}/audits`, { method: "POST", headers: auth, body });
-    await fetch(`${base}/audits`, { method: "POST", headers: auth, body });
-    const third = await fetch(`${base}/audits`, { method: "POST", headers: auth, body });
-    expect(third.status).toBe(429);
-  });
-
-  it("OPTIONS preflight returns the pinned origin", async () => {
+  it("wrong method on /run-audit → 405", async () => {
     const base = await boot();
-    const res = await fetch(`${base}/audits`, { method: "OPTIONS" });
-    expect(res.status).toBe(204);
-    expect(res.headers.get("access-control-allow-origin")).toBe(ORIGIN);
+    const res = await fetch(`${base}/run-audit`, { method: "GET", headers: auth });
+    expect(res.status).toBe(405);
   });
 });

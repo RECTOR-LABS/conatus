@@ -98,7 +98,7 @@ export const AuditReport = z.object({
     slither: ToolRun,
     mantle_gas_review: ToolRun,
   }),
-  /** LLM model used for synthesis, e.g. "anthropic/claude-sonnet-4.6" (via OpenRouter). */
+  /** LLM model used for synthesis, e.g. "anthropic/claude-sonnet-5" (via OpenRouter). */
   model: z.string().optional(),
   /** True when any required tool errored — consumers must treat the verdict as incomplete. */
   incomplete: z.boolean(),

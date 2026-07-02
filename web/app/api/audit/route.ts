@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { send } from "@vercel/queue";
+import { jobStore } from "@/lib/jobStore";
+import { rateLimit } from "@/lib/rateLimit";
+import { submitAudit } from "@/lib/auditSubmit";
 
+const ipOf = (r: NextRequest): string => (r.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown").trim();
+
+/** Producer: validate + rate-limit + create the Redis job + enqueue to Vercel Queues → 202 {id}. */
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const apiUrl = process.env.CONATUS_API_URL;
-  const token = process.env.CONATUS_API_TOKEN;
-  if (!apiUrl || !token) {
-    return NextResponse.json({ error: "Server misconfigured: CONATUS_API_URL/CONATUS_API_TOKEN missing." }, { status: 500 });
-  }
-  const body = await req.text();
-  const upstream = await fetch(`${apiUrl}/audits`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-token": token },
-    body,
-    cache: "no-store",
-  }).catch(() => null);
-  if (!upstream) return NextResponse.json({ error: "Audit service unreachable." }, { status: 502 });
-  return NextResponse.json(await upstream.json().catch(() => ({ error: "Bad upstream response." })), { status: upstream.status });
+  const raw = await req.json().catch(() => null);
+  const store = jobStore();
+  const allow = rateLimit();
+  const { status, body } = await submitAudit(raw, ipOf(req), {
+    allow,
+    createJob: (input) => store.createJob(input),
+    enqueue: (payload) => send("audits", payload),
+  });
+  return NextResponse.json(body, { status });
 }

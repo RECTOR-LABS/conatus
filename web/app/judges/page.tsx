@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { ArrowUpRight, HelpCircle, Users, Handshake } from "lucide-react";
+import { ArrowUpRight, Handshake } from "lucide-react";
 import { SITE_URL, explorerAddress, shortAddr } from "@/lib/constants";
 import { MAINNET } from "@/app/judges/_data";
 import { Footnote } from "@/app/judges/_components/Footnote";
 import { References } from "@/app/judges/_components/References";
+import { JudgesTabs, type JudgeTab } from "@/app/judges/_components/JudgesTabs";
 import { SelfRatingSim } from "@/app/judges/_components/SelfRatingSim";
 import { RatingAnatomy } from "@/app/judges/_components/RatingAnatomy";
 import { SybilWeighting } from "@/app/judges/_components/SybilWeighting";
@@ -16,7 +17,7 @@ const GITHUB = "https://github.com/RECTOR-LABS/conatus";
 export const metadata: Metadata = {
   title: "Conatus — answers for the judges",
   description:
-    "Two hard Demo-Day questions — can the reputation be gamed, and is the verdict reproducible — answered with interactive demos and on-chain receipts, not just talk.",
+    "Three Demo-Day questions, one tab each: how self/fake ratings are stopped, how the third-party mechanism works, and why the verdict is reproducible — interactive demos + on-chain receipts.",
   openGraph: {
     title: "Conatus — answers for the judges",
     description:
@@ -27,19 +28,9 @@ export const metadata: Metadata = {
   },
 };
 
-// Reuses pitch's ProofLink idiom verbatim (semantic tokens render dark regardless — .dark is
-// always on), just with the stricter noopener rel already used by References.tsx.
-function ProofLink({
-  href,
-  label,
-  value,
-  emphasis = false,
-}: {
-  href: string;
-  label: string;
-  value: string;
-  emphasis?: boolean;
-}) {
+// Reuses pitch's ProofLink idiom (semantic tokens render dark regardless), with the stricter
+// noopener rel already used by References.tsx.
+function ProofLink({ href, label, value, emphasis = false }: { href: string; label: string; value: string; emphasis?: boolean }) {
   return (
     <a
       href={href}
@@ -60,32 +51,157 @@ function ProofLink({
   );
 }
 
-const REPUTATION_LAYERS: { status: "live" | "roadmap"; name: string; body: string }[] = [
+function WidgetLabel({ children }: { children: React.ReactNode }) {
+  return <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">{children}</p>;
+}
+
+function Receipts({ ids }: { ids: string[] }) {
+  return (
+    <div className="mt-8 rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+      <p className="mb-3 font-mono text-[0.7rem] uppercase tracking-widest text-slate-500">receipts</p>
+      <References ids={ids} />
+    </div>
+  );
+}
+
+// William's tab — the sybil plan, given real estate. "live" is shipped; "next" is honestly not-yet-built.
+const SYBIL_PLAN: { tag: "live" | "next"; title: string; body: string }[] = [
   {
-    status: "live",
-    name: "self-rejection",
-    body: "the registry itself reverts if the rater is the agent's own owner or operator — enforced in the contract, not a UI checkbox.",
+    tag: "live",
+    title: "attribution + binding",
+    body: "every rating is signed on-chain and tied to one specific audit — so fakes are at least attributable and weightable, never anonymous. (the mechanism itself is in Vizta's tab.)",
   },
   {
-    status: "live",
-    name: "attribution + binding",
-    body: "every rating carries the rater's address plus a targetHash tying it to one specific audit, and a feedbackHash so it can't be swapped after the fact.",
+    tag: "next",
+    title: "proof-of-consumption",
+    body: "only a wallet that actually paid for an audit can rate it — provable on-chain. spinning up 10 wallets is useless unless each one really bought an audit: real money, real trail. the strongest and simplest filter, so it's first.",
   },
   {
-    status: "live",
-    name: "filterable reads",
-    body: "anyone can pull ratings straight off the registry, filtered by client address or tag — no middleman decides what you get to see.",
+    tag: "next",
+    title: "staking",
+    body: "to leave a rating you post a bond in MNT — slashable if the rating is later shown false. weight = stake × your own reputation. makes faking cost more than it's ever worth.",
   },
-  {
-    status: "roadmap",
-    name: "economic sybil-resistance",
-    body: "stopping one person from spinning up 10 wallets needs a stake or proof-of-consumption gate. not built yet — that's genuinely next.",
-  },
+];
+
+const williamPanel = (
+  <>
+    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+      how do you stop self-rating and fake ratings?
+    </h2>
+    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+      real talk — the base case is closed. self-rating just can&apos;t happen: the ERC-8004 registry rejects it at
+      the contract level<Footnote id="eip-self" /> — the agent&apos;s own wallet literally can&apos;t rate
+      itself<Footnote id="src-give" />, and its owner address is public record<Footnote id="chain-owner" /> so
+      there&apos;s no hiding behind it. you can&apos;t grade your own exam. try it:
+    </p>
+    <WidgetLabel>try it — rate the agent as itself</WidgetLabel>
+    <SelfRatingSim />
+
+    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+      the harder question — and the one I think you&apos;re actually asking — is fakes from a bunch of fresh
+      wallets. being straight: that&apos;s the part we&apos;re still building. here&apos;s the plan, in order:
+    </p>
+    <ol className="mt-4 space-y-3">
+      {SYBIL_PLAN.map((s) => (
+        <li key={s.title} className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+          <p className="mb-1 flex items-center gap-2">
+            <span
+              className={
+                s.tag === "live"
+                  ? "rounded bg-emerald-500/10 px-2 py-0.5 text-[0.7rem] text-emerald-300"
+                  : "rounded bg-amber-500/10 px-2 py-0.5 text-[0.7rem] text-amber-300"
+              }
+            >
+              {s.tag === "live" ? "live" : "next"}
+            </span>
+            <span className="font-semibold text-slate-200">{s.title}</span>
+          </p>
+          <p className="text-sm leading-relaxed text-slate-400">{s.body}</p>
+        </li>
+      ))}
+    </ol>
+    <p className="mt-4 max-w-2xl text-sm italic leading-relaxed text-slate-400">
+      self-rejection is live today; the economic layer is the build. that&apos;s the honest state — but it&apos;s
+      exactly the direction you were pointing at.
+    </p>
+    <Receipts ids={["eip-self", "src-give", "chain-owner"]} />
+  </>
+);
+
+const viztaPanel = (
+  <>
+    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+      how does the third-party rating mechanism work?
+    </h2>
+    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+      you flagged the same thing as William, and you&apos;re right that they&apos;re linked. so here&apos;s the
+      actual mechanism — how one real rating works end to end, and why you can trust what you read off-chain.
+    </p>
+    <WidgetLabel>anatomy of a real on-chain rating</WidgetLabel>
+    <RatingAnatomy />
+
+    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+      two things make it a mechanism and not a vibe: every rating is signed on-chain<Footnote id="chain-rep" /> and
+      bound to one exact audit through a keccak feedbackHash<Footnote id="src-feedback" /> — so it can&apos;t be
+      swapped after the fact; and anyone can read them straight off the registry, filtered by rater or tag, with no
+      middleman deciding what you see.
+    </p>
+
+    <WidgetLabel>and how you handle fakes today — weight, don&apos;t average</WidgetLabel>
+    <SybilWeighting />
+    <p className="mt-4 max-w-2xl text-sm italic leading-relaxed text-slate-400">
+      a raw average is easy to drown with junk wallets. weight each rating by the rater&apos;s standing and the
+      swarm collapses to near-zero — no gatekeeper needed.
+    </p>
+    <Receipts ids={["chain-rep", "src-feedback"]} />
+  </>
+);
+
+const whiskerPanel = (
+  <>
+    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+      score the same contract twice — same result?
+    </h2>
+    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+      so honestly — yeah the LLM is probabilistic, we don&apos;t fight that. we just don&apos;t let it near the
+      score<Footnote id="src-scoring" />. the model only argues about findings, a fixed rubric does the actual
+      math<Footnote id="test-60" />. same findings, same number, every run. we ran the demo contract a bunch of
+      times, kept landing on 60<Footnote id="chain-verdict" />. every time.
+    </p>
+    <p className="mt-5 max-w-2xl border-l-2 border-emerald-500/30 pl-4 text-sm italic leading-relaxed text-slate-400">
+      referee vs. scoreboard, basically. the ref — the LLM, running at temperature 0<Footnote id="src-temp0" /> —
+      gets to argue about what happened on the field. but nothing it says counts unless it points at an actual line
+      of code — anything uncited gets thrown out, and counted<Footnote id="src-guard" />. the scoreboard — the
+      rubric — doesn&apos;t have opinions, it just adds up whatever findings survive. same findings in, same score
+      out.
+    </p>
+    <WidgetLabel>same contract, run it again</WidgetLabel>
+    <RunItAgain />
+    <WidgetLabel>the rubric, live — compute it yourself</WidgetLabel>
+    <RubricCalculator />
+    <WidgetLabel>the whole pipeline, boxed in</WidgetLabel>
+    <BoxedPipeline />
+    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-400">
+      one nuance, being straight: temp 0 doesn&apos;t mean the LLM writes the literal same words every time —
+      there&apos;s still run-to-run wiggle in the prose (batching / floating-point on the provider&apos;s side, not
+      something we control). what&apos;s pinned down is the score, not the essay. the rubric only reads structured
+      fields — severity, confidence, whether a citation exists — so as long as the same findings keep showing up,
+      which they did every time, the number holds. that&apos;s the whole point of boxing the LLM in: we&apos;re not
+      trusting its writing, we&apos;re trusting whatever survives the guardrails.
+    </p>
+    <Receipts ids={["src-scoring", "test-60", "chain-verdict", "src-temp0", "src-guard"]} />
+  </>
+);
+
+const TABS: JudgeTab[] = [
+  { id: "william", judge: "William", org: "Orbit AI", question: "stopping self / fake ratings", panel: williamPanel },
+  { id: "vizta", judge: "Vizta Tsang", org: "Tencent Cloud", question: "the third-party mechanism", panel: viztaPanel },
+  { id: "whisker", judge: "Whisker Yu", org: "Mantle", question: "is the verdict reproducible?", panel: whiskerPanel },
 ];
 
 export default function JudgesPage() {
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-16 sm:py-20">
+    <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-12 sm:py-14">
       {/* Status bar */}
       <div className="reveal flex items-center justify-between border-b border-border/60 pb-4">
         <span className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground">CONATUS · FOR THE JUDGES</span>
@@ -95,178 +211,45 @@ export default function JudgesPage() {
         </span>
       </div>
 
-      {/* Hero */}
-      <header className="reveal reveal-1 space-y-5 pt-10">
+      {/* Hero (tight — the tabs carry the framing) */}
+      <header className="reveal reveal-1 space-y-4 pt-8">
         <p className="section-tag">Mantle Turing Test Hackathon 2026 · Demo Day</p>
         <h1 className="font-[family-name:var(--font-archivo)] text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
           answers for the judges.
         </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-          quick context — at demo day we got two questions that actually matter: can the reputation be gamed, and
-          is the verdict even reproducible. fair questions, honestly kind of the whole ballgame. a slide
-          wasn&apos;t going to cut it, so here&apos;s the real answer to both — live interactive demos, real code,
-          on-chain receipts.
-        </p>
-        <p className="flex max-w-2xl items-start gap-2 text-sm leading-relaxed text-slate-400">
-          <Users className="mt-0.5 size-4 shrink-0 text-emerald-400/80" aria-hidden />
-          <span>
-            thanks to <span className="text-slate-200">William</span> (Orbit AI),{" "}
-            <span className="text-slate-200">Vizta Tsang</span> (Tencent Cloud), and{" "}
-            <span className="text-slate-200">Whisker Yu</span> (Mantle) for asking them — this page exists because
-            you didn&apos;t let it slide.
-          </span>
+        <p className="max-w-2xl text-base leading-relaxed text-slate-300">
+          demo day, three questions that actually matter. a slide wasn&apos;t going to cut it — so here&apos;s a
+          real answer to each, one tab per judge. live interactive demos, real code, on-chain receipts. pick yours:
         </p>
       </header>
 
-      {/* Framing */}
-      <section className="reveal reveal-2 pt-12">
-        <p className="section-tag mb-3">00 / why these two questions</p>
-        <div className="flex items-start gap-3 rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <HelpCircle className="mt-0.5 size-5 shrink-0 text-emerald-400" aria-hidden />
-          <p className="text-sm leading-relaxed text-slate-300">
-            if the reputation score can be faked, it isn&apos;t reputation — it&apos;s just a number I picked
-            myself. and if the verdict changes every run, the risk score is basically vibes with extra steps. so:
-            can the reputation be gamed, and is the verdict actually reproducible. both get a real answer below —
-            working demos, not just paragraphs.
-          </p>
+      {/* Tabs — one frame per judge */}
+      <div className="reveal reveal-2 pt-8">
+        <JudgesTabs tabs={TABS} />
+      </div>
+
+      {/* Shared footer — go verify + reproduce */}
+      <section className="mt-14 border-t border-border/60 pt-8">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-[family-name:var(--font-archivo)] text-xl font-bold tracking-tight">go check it yourself</h2>
+          <p className="text-sm text-slate-400">the contract, agent #{MAINNET.agentId}, the ratings, every verdict — all live on Mantle mainnet.</p>
         </div>
-      </section>
-
-      {/* Section A — reputation */}
-      <section className="pt-14">
-        <p className="section-tag mb-2">01 / reputation</p>
-        <h2
-          id="reputation"
-          className="scroll-mt-24 font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl"
-        >
-          can the reputation be gamed?
-        </h2>
-
-        <p className="mb-2 mt-5 font-mono text-xs uppercase tracking-widest text-emerald-400/80">tl;dr</p>
-        <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-          real talk — self-rating just can&apos;t happen, the ERC-8004 registry rejects it at the contract
-          level<Footnote id="eip-self" /> (the agent&apos;s own wallet literally can&apos;t rate itself, it&apos;s
-          in the spec<Footnote id="src-give" />). fake ratings from randoms? every rating is signed
-          on-chain<Footnote id="chain-rep" /> and tied to one specific audit<Footnote id="src-feedback" />, so you
-          can see who said what and weight it. the part we haven&apos;t fully solved — one person spinning up 10
-          wallets — that&apos;s the next layer (make you stake / prove you actually used the audit first). being
-          upfront.
-        </p>
-
-        <p className="mt-5 max-w-2xl border-l-2 border-emerald-500/30 pl-4 text-sm italic leading-relaxed text-slate-400">
-          basically: you can&apos;t grade your own exam. a teacher grading their own test could hand out a 100,
-          sure — nobody&apos;s trusting that grade. same idea here: the agent&apos;s owner
-          wallet<Footnote id="chain-owner" /> is public record, and the contract flat-out refuses to let that
-          address be the rater. don&apos;t take my word for it — try it below.
-        </p>
-
-        <p className="mb-2 mt-8 font-mono text-xs uppercase tracking-widest text-slate-500">
-          try it — rate the agent as itself
-        </p>
-        <SelfRatingSim />
-
-        <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">
-          anatomy of a real on-chain rating
-        </p>
-        <RatingAnatomy />
-
-        <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">
-          naive average vs. weighted by reputation
-        </p>
-        <SybilWeighting />
-
-        <div className="mt-8 rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <p className="mb-4 font-mono text-xs uppercase tracking-widest text-slate-500">
-            four layers, and where we&apos;re honestly at
-          </p>
-          <ol className="space-y-3 text-sm">
-            {REPUTATION_LAYERS.map((l) => (
-              <li key={l.name} className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                <span
-                  className={
-                    l.status === "live"
-                      ? "rounded bg-emerald-500/10 px-2 py-0.5 text-[0.7rem] text-emerald-300"
-                      : "rounded bg-amber-500/10 px-2 py-0.5 text-[0.7rem] text-amber-300"
-                  }
-                >
-                  {l.status}
-                </span>
-                <span className="font-semibold text-slate-200">{l.name}</span>
-                <span className="text-slate-400">— {l.body}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Section B — determinism */}
-      <section className="pt-14">
-        <p className="section-tag mb-2">02 / determinism</p>
-        <h2
-          id="determinism"
-          className="scroll-mt-24 font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl"
-        >
-          is the verdict reproducible?
-        </h2>
-
-        <p className="mb-2 mt-5 font-mono text-xs uppercase tracking-widest text-emerald-400/80">tl;dr</p>
-        <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
-          so honestly — yeah the LLM is probabilistic, we don&apos;t fight that. we just don&apos;t let it near
-          the score<Footnote id="src-scoring" />. the model only argues about findings, a fixed rubric does the
-          actual math<Footnote id="test-60" />. same findings, same number, every run. we ran the demo contract a
-          bunch of times, kept landing on 60<Footnote id="chain-verdict" />. every time.
-        </p>
-
-        <p className="mt-5 max-w-2xl border-l-2 border-emerald-500/30 pl-4 text-sm italic leading-relaxed text-slate-400">
-          referee vs. scoreboard, basically. the ref — the LLM, running at temperature
-          0<Footnote id="src-temp0" /> — gets to argue about what happened on the field, is this a foul, is
-          that not. but nothing it says counts unless it points at an actual line of code — anything uncited
-          gets thrown out, and counted<Footnote id="src-guard" />. the scoreboard — the rubric — doesn&apos;t have
-          opinions, it just adds up whatever findings survive review. same findings in, same score out.
-        </p>
-
-        <p className="mb-2 mt-8 font-mono text-xs uppercase tracking-widest text-slate-500">
-          same contract, run it again
-        </p>
-        <RunItAgain />
-
-        <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">the rubric, live</p>
-        <RubricCalculator />
-
-        <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">
-          the whole pipeline, boxed in
-        </p>
-        <BoxedPipeline />
-
-        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-400">
-          one nuance, being straight about it: temp 0 doesn&apos;t mean the LLM writes the literal same words
-          every single time — there&apos;s still some run-to-run wiggle in the prose (batching / floating-point
-          stuff on the provider&apos;s side, not something we control). what&apos;s actually pinned down is the
-          score, not the essay. the rubric only reads structured fields — severity, confidence, whether a citation
-          exists — so as long as the same findings keep showing up, which they did every time we tried, the number
-          holds. that&apos;s the whole point of boxing the LLM in like this: we&apos;re not trusting its writing,
-          we&apos;re trusting whatever survives the guardrails.
-        </p>
-      </section>
-
-      {/* References */}
-      <section className="pt-14">
-        <h2
-          id="references"
-          className="scroll-mt-24 font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl"
-        >
-          references
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
-          every claim above, backed by a receipt: the EIP itself, the exact source lines, the on-chain
-          transactions, and the CI test that pins the numbers.
-        </p>
-        <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950/60 p-5">
-          <References />
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" emphasis />
+          <ProofLink href={explorerAddress(MAINNET.attestation)} label="AuditAttestation contract" value={shortAddr(MAINNET.attestation)} />
+          <ProofLink href={GITHUB} label="Public source" value="github.com/RECTOR-LABS/conatus" />
+          <ProofLink
+            href={explorerAddress(MAINNET.identityRegistry)}
+            label="ERC-8004 identity"
+            value={`agent #${MAINNET.agentId} · IdentityRegistry`}
+          />
         </div>
 
-        <p className="mb-2 mt-8 font-mono text-xs uppercase tracking-widest text-slate-500">reproduce it yourself</p>
-        <pre className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70 p-4 font-mono text-xs leading-relaxed text-slate-300">
+        <details className="mt-5 rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+          <summary className="cursor-pointer font-mono text-[0.7rem] uppercase tracking-widest text-slate-500 hover:text-slate-300">
+            reproduce it yourself
+          </summary>
+          <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-slate-300">
 {`// pull every rating for agent #${MAINNET.agentId} straight off the ReputationRegistry
 readAllFeedback(
   agentId: ${MAINNET.agentId},   // this agent
@@ -280,33 +263,9 @@ readAllFeedback(
 // or just run the same test suite CI runs on every commit
 git clone ${GITHUB}
 cd conatus && pnpm -C agent test`}
-        </pre>
-      </section>
+          </pre>
+        </details>
 
-      {/* Close */}
-      <section className="mt-14 border-t border-border/60 pt-8">
-        <p className="section-tag mb-3">03 / go check it</p>
-        <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
-          go check it yourself
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-          the contract, the agent #115, the ratings, every anchored verdict — it&apos;s all live on Mantle
-          mainnet right now, not a testnet stand-in. here&apos;s where to look:
-        </p>
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" emphasis />
-          <ProofLink
-            href={explorerAddress(MAINNET.attestation)}
-            label="AuditAttestation contract"
-            value={shortAddr(MAINNET.attestation)}
-          />
-          <ProofLink href={GITHUB} label="Public source" value="github.com/RECTOR-LABS/conatus" />
-          <ProofLink
-            href={explorerAddress(MAINNET.identityRegistry)}
-            label="ERC-8004 identity"
-            value={`agent #${MAINNET.agentId} · IdentityRegistry`}
-          />
-        </div>
         <p className="mt-8 flex items-start gap-2 text-sm leading-relaxed text-slate-400">
           <Handshake className="mt-0.5 size-4 shrink-0 text-emerald-400/80" aria-hidden />
           <span>genuinely — thanks for asking the hard questions. made the whole thing better. — RECTOR</span>

@@ -59,9 +59,9 @@ export const SYBIL_DEMO: DemoRating[] = [
 export const FOOTNOTES: FootnoteDef[] = [
   { id: "eip-self", type: "eip", label: "EIP-8004 §Reputation Registry — feedback submitter must not be the agent owner/operator", href: `${EIP_URL}#reputation-registry` },
   { id: "src-give", type: "source", label: "giveFeedback.ts — rating must come from a wallet that is NOT the agent", href: `${GH}/agent/scripts/giveFeedback.ts#L15-L33` },
+  { id: "chain-owner", type: "chain", label: "Agent #115 owner wallet on Mantle mainnet", href: `${MAINNET.explorer}/address/${MAINNET.owner}` },
   { id: "chain-rep", type: "chain", label: "Agent #115 reputation feedback on Mantle mainnet (ReputationRegistry)", href: `${MAINNET.explorer}/address/${MAINNET.reputationRegistry}` },
   { id: "src-feedback", type: "source", label: "feedback.ts — keccak feedbackHash binds a rating to its exact payload", href: `${GH}/agent/src/feedback.ts#L51-L59` },
-  { id: "chain-owner", type: "chain", label: "Agent #115 owner wallet on Mantle mainnet", href: `${MAINNET.explorer}/address/${MAINNET.owner}` },
   { id: "src-scoring", type: "source", label: "scoring.ts — the deterministic risk rubric (pure function of findings)", href: `${GH}/agent/src/scoring.ts#L34-L41` },
   { id: "test-60", type: "test", label: "scoring.test.ts — CI pins computeRiskScore([critical/high]) === 60", href: `${GH}/agent/test/scoring.test.ts#L20-L22` },
   { id: "chain-verdict", type: "chain", label: "Anchored audit verdict (riskScore 60) on Mantle mainnet", href: `${MAINNET.explorer}/tx/${MAINNET.verdictTx}` },

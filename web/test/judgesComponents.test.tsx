@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BoxedPipeline } from "@/app/judges/_components/BoxedPipeline";
 import { Footnote } from "@/app/judges/_components/Footnote";
+import { JudgesTabs, type JudgeTab } from "@/app/judges/_components/JudgesTabs";
 import { RatingAnatomy } from "@/app/judges/_components/RatingAnatomy";
 import { References } from "@/app/judges/_components/References";
 import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
@@ -106,5 +107,46 @@ describe("BoxedPipeline", () => {
     expect(screen.getByText(/rubric/i)).toBeInTheDocument();
     expect(screen.getByTestId("dropped-count").textContent).toContain("1");
     expect(screen.getByTestId("pipeline-score").textContent).toContain("60");
+  });
+});
+
+describe("JudgesTabs", () => {
+  const tabs: JudgeTab[] = [
+    { id: "a", judge: "William", org: "Orbit AI", question: "q1", panel: <p>panel-alpha</p> },
+    { id: "b", judge: "Vizta", org: "Tencent Cloud", question: "q2", panel: <p>panel-beta</p> },
+    { id: "c", judge: "Whisker", org: "Mantle", question: "q3", panel: <p>panel-gamma</p> },
+  ];
+
+  it("renders one tab per judge with the WAI-ARIA tabs roles + roving selection", () => {
+    render(<JudgesTabs tabs={tabs} />);
+    expect(screen.getByRole("tablist")).toBeInTheDocument();
+    const tabButtons = screen.getAllByRole("tab");
+    expect(tabButtons).toHaveLength(3);
+    expect(tabButtons[0]).toHaveAttribute("aria-selected", "true");
+    expect(tabButtons[1]).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("switches the visible panel on click", async () => {
+    const user = userEvent.setup();
+    render(<JudgesTabs tabs={tabs} />);
+    expect(screen.getByText("panel-alpha")).toBeVisible();
+    expect(screen.getByText("panel-beta")).not.toBeVisible();
+    await user.click(screen.getByRole("tab", { name: /Vizta/ }));
+    expect(screen.getByText("panel-beta")).toBeVisible();
+    expect(screen.getByText("panel-alpha")).not.toBeVisible();
+    expect(screen.getByRole("tab", { name: /Vizta/ })).toHaveAttribute("aria-selected", "true");
+  });
+});
+
+describe("References (per-tab filter)", () => {
+  it("renders only the passed footnote ids, keeping their GLOBAL numbers", () => {
+    const ids = [FOOTNOTES[3].id, FOOTNOTES[4].id];
+    render(<References ids={ids} />);
+    expect(document.getElementById(`ref-${FOOTNOTES[3].id}`)).not.toBeNull();
+    expect(document.getElementById(`ref-${FOOTNOTES[0].id}`)).toBeNull();
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(items[0].textContent).toContain("[4]");
+    expect(items[1].textContent).toContain("[5]");
   });
 });

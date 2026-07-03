@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Footnote } from "@/app/judges/_components/Footnote";
 import { References } from "@/app/judges/_components/References";
+import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
 import { FOOTNOTES } from "@/app/judges/_data";
 
 describe("Footnote", () => {
@@ -25,5 +27,16 @@ describe("References", () => {
     const external = links.filter((l) => l.getAttribute("target") === "_blank");
     expect(external.length).toBeGreaterThanOrEqual(FOOTNOTES.length);
     external.forEach((l) => expect(l).toHaveAttribute("rel", expect.stringContaining("noopener")));
+  });
+});
+
+describe("RubricCalculator", () => {
+  it("starts at the demo score of 60 and recomputes when a finding is toggled off", async () => {
+    const user = userEvent.setup();
+    render(<RubricCalculator />);
+    expect(screen.getByTestId("rubric-score").textContent).toContain("60");
+    // Toggle the critical reentrancy off -> score drops to 0.
+    await user.click(screen.getByRole("switch", { name: /reentrancy/i }));
+    expect(screen.getByTestId("rubric-score").textContent).toBe("0/100");
   });
 });

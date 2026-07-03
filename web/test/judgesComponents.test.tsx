@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Footnote } from "@/app/judges/_components/Footnote";
 import { References } from "@/app/judges/_components/References";
 import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
+import { RunItAgain } from "@/app/judges/_components/RunItAgain";
 import { FOOTNOTES } from "@/app/judges/_data";
 
 describe("Footnote", () => {
@@ -38,5 +39,18 @@ describe("RubricCalculator", () => {
     // Toggle the critical reentrancy off -> score drops to 0.
     await user.click(screen.getByRole("switch", { name: /reentrancy/i }));
     expect(screen.getByTestId("rubric-score").textContent).toBe("0/100");
+  });
+});
+
+describe("RunItAgain", () => {
+  it("keeps the score locked at 60 across many re-runs while the run count climbs", async () => {
+    const user = userEvent.setup();
+    render(<RunItAgain />);
+    const btn = screen.getByRole("button", { name: /re-run audit/i });
+    for (let i = 0; i < 6; i++) {
+      await user.click(btn);
+      expect(screen.getByTestId("run-score").textContent).toContain("60");
+    }
+    expect(screen.getByTestId("run-count").textContent).toContain("7"); // 1 initial + 6 clicks
   });
 });

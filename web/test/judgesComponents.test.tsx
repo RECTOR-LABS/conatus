@@ -2,11 +2,12 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Footnote } from "@/app/judges/_components/Footnote";
+import { RatingAnatomy } from "@/app/judges/_components/RatingAnatomy";
 import { References } from "@/app/judges/_components/References";
 import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
 import { RunItAgain } from "@/app/judges/_components/RunItAgain";
 import { SelfRatingSim } from "@/app/judges/_components/SelfRatingSim";
-import { FOOTNOTES, MAINNET } from "@/app/judges/_data";
+import { FOOTNOTES, MAINNET, RATED_TARGET } from "@/app/judges/_data";
 import { shortAddr } from "@/lib/constants";
 
 describe("Footnote", () => {
@@ -65,5 +66,21 @@ describe("SelfRatingSim", () => {
     expect(screen.getByTestId("sim-result").textContent).toMatch(/MUST NOT be the agent owner/i);
     await user.click(screen.getByRole("button", { name: /rate as a third-party/i }));
     expect(screen.getByTestId("sim-result").textContent).toContain(shortAddr(MAINNET.rater));
+  });
+});
+
+describe("RatingAnatomy", () => {
+  it("shows the three real dimension values and binds tag2 to the rated targetHash", async () => {
+    const user = userEvent.setup();
+    render(<RatingAnatomy />);
+    expect(screen.getByText("90")).toBeInTheDocument();
+    expect(screen.getByText("85")).toBeInTheDocument();
+    expect(screen.getByText("88")).toBeInTheDocument();
+    // select a different field first so the click is a real state transition
+    await user.click(screen.getByRole("button", { name: /agentId/i }));
+    expect(screen.getByTestId("field-explainer").textContent).toContain(`#${MAINNET.agentId}`);
+    // then tag2 — assert the rendered value is the actual RATED_TARGET, not just prose
+    await user.click(screen.getByRole("button", { name: /tag2/i }));
+    expect(screen.getByTestId("field-explainer").textContent).toContain(RATED_TARGET.slice(0, 12));
   });
 });

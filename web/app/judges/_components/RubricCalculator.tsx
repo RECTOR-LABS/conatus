@@ -18,20 +18,20 @@ export function RubricCalculator() {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
       <div className="mb-4 flex items-baseline justify-between">
-        <p className="font-mono text-xs uppercase tracking-widest text-slate-500">risk = min(100, round(Σ weight × confidence))</p>
-        <p data-testid="rubric-score" className="font-[family-name:var(--font-archivo)] text-3xl font-extrabold tabular-nums text-emerald-400">
-          {score}<span className="text-lg text-slate-600">/100</span>
+        <p className="font-mono text-sm uppercase tracking-widest text-slate-500">risk = min(100, round(Σ weight × confidence))</p>
+        <p data-testid="rubric-score" className="font-[family-name:var(--font-archivo)] text-4xl font-extrabold tabular-nums text-emerald-400">
+          {score}<span className="text-xl text-slate-600">/100</span>
         </p>
       </div>
       <ul className="space-y-2">
         {rows.map((r) => (
-          <li key={r.id} className="flex items-center justify-between gap-3 text-sm">
+          <li key={r.id} className="flex items-center justify-between gap-3 text-base">
             <span className="flex items-center gap-2">
-              <span className={cn("font-mono text-xs", r.severity === "critical" ? "text-red-400" : r.severity === "high" ? "text-orange-400" : "text-slate-400")}>
+              <span className={cn("font-mono text-sm", r.severity === "critical" ? "text-red-400" : r.severity === "high" ? "text-orange-400" : "text-slate-400")}>
                 {r.severity}
               </span>
               <span className="text-slate-300">{r.label}</span>
-              <span className="font-mono text-xs text-slate-600">+{SEVERITY_WEIGHT[r.severity]}</span>
+              <span className="font-mono text-sm text-slate-600">+{SEVERITY_WEIGHT[r.severity]}</span>
             </span>
             <button
               role="switch"

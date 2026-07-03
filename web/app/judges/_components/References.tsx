@@ -17,7 +17,7 @@ const TYPE_LABEL: Record<FootnoteType, string> = {
 export function References({ ids }: { ids?: string[] } = {}) {
   const items = ids ? FOOTNOTES.filter((f) => ids.includes(f.id)) : FOOTNOTES;
   return (
-    <ol className="space-y-3 text-sm">
+    <ol className="space-y-3 text-base">
       {items.map((f) => {
         const Icon = ICON[f.type];
         return (

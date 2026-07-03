@@ -66,10 +66,10 @@ export function JudgesTabs({ tabs }: { tabs: JudgeTab[] }) {
               >
                 {t.org}
               </span>
-              <span className={cn("text-sm font-semibold sm:text-base", selected ? "text-slate-100" : "text-slate-300")}>
+              <span className={cn("text-base font-semibold sm:text-lg", selected ? "text-slate-100" : "text-slate-300")}>
                 {t.judge}
               </span>
-              <span className="hidden text-xs leading-snug text-slate-500 sm:block">{t.question}</span>
+              <span className="hidden text-sm leading-snug text-slate-500 sm:block">{t.question}</span>
             </button>
           );
         })}

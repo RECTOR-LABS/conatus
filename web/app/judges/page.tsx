@@ -44,7 +44,7 @@ function ProofLink({ href, label, value, emphasis = false }: { href: string; lab
     >
       <div className="min-w-0">
         <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
-        <div className={`truncate font-mono text-sm ${emphasis ? "text-primary" : "text-foreground/90"}`}>{value}</div>
+        <div className={`truncate font-mono text-base ${emphasis ? "text-primary" : "text-foreground/90"}`}>{value}</div>
       </div>
       <ArrowUpRight className="size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
     </a>
@@ -52,7 +52,7 @@ function ProofLink({ href, label, value, emphasis = false }: { href: string; lab
 }
 
 function WidgetLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2 mt-6 font-mono text-xs uppercase tracking-widest text-slate-500">{children}</p>;
+  return <p className="mb-2 mt-6 font-mono text-sm uppercase tracking-widest text-slate-500">{children}</p>;
 }
 
 function Receipts({ ids }: { ids: string[] }) {
@@ -85,10 +85,10 @@ const SYBIL_PLAN: { tag: "live" | "next"; title: string; body: string }[] = [
 
 const williamPanel = (
   <>
-    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+    <h2 className="font-[family-name:var(--font-archivo)] text-3xl font-bold tracking-tight sm:text-4xl">
       how do you stop self-rating and fake ratings?
     </h2>
-    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+    <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
       real talk — the base case is closed. self-rating just can&apos;t happen: the ERC-8004 registry rejects it at
       the contract level<Footnote id="eip-self" /> — the agent&apos;s own wallet literally can&apos;t rate
       itself<Footnote id="src-give" />, and its owner address is public record<Footnote id="chain-owner" /> so
@@ -97,7 +97,7 @@ const williamPanel = (
     <WidgetLabel>try it — rate the agent as itself</WidgetLabel>
     <SelfRatingSim />
 
-    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+    <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
       the harder question — and the one I think you&apos;re actually asking — is fakes from a bunch of fresh
       wallets. being straight: that&apos;s the part we&apos;re still building. here&apos;s the plan, in order:
     </p>
@@ -116,11 +116,11 @@ const williamPanel = (
             </span>
             <span className="font-semibold text-slate-200">{s.title}</span>
           </p>
-          <p className="text-sm leading-relaxed text-slate-400">{s.body}</p>
+          <p className="text-base leading-relaxed text-slate-400">{s.body}</p>
         </li>
       ))}
     </ol>
-    <p className="mt-4 max-w-2xl text-sm italic leading-relaxed text-slate-400">
+    <p className="mt-4 max-w-2xl text-base italic leading-relaxed text-slate-400">
       self-rejection is live today; the economic layer is the build. that&apos;s the honest state — but it&apos;s
       exactly the direction you were pointing at.
     </p>
@@ -130,17 +130,17 @@ const williamPanel = (
 
 const viztaPanel = (
   <>
-    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+    <h2 className="font-[family-name:var(--font-archivo)] text-3xl font-bold tracking-tight sm:text-4xl">
       how does the third-party rating mechanism work?
     </h2>
-    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+    <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
       you flagged the same thing as William, and you&apos;re right that they&apos;re linked. so here&apos;s the
       actual mechanism — how one real rating works end to end, and why you can trust what you read off-chain.
     </p>
     <WidgetLabel>anatomy of a real on-chain rating</WidgetLabel>
     <RatingAnatomy />
 
-    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+    <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
       two things make it a mechanism and not a vibe: every rating is signed on-chain<Footnote id="chain-rep" /> and
       bound to one exact audit through a keccak feedbackHash<Footnote id="src-feedback" /> — so it can&apos;t be
       swapped after the fact; and anyone can read them straight off the registry, filtered by rater or tag, with no
@@ -149,7 +149,7 @@ const viztaPanel = (
 
     <WidgetLabel>and how you handle fakes today — weight, don&apos;t average</WidgetLabel>
     <SybilWeighting />
-    <p className="mt-4 max-w-2xl text-sm italic leading-relaxed text-slate-400">
+    <p className="mt-4 max-w-2xl text-base italic leading-relaxed text-slate-400">
       a raw average is easy to drown with junk wallets. weight each rating by the rater&apos;s standing and the
       swarm collapses to near-zero — no gatekeeper needed.
     </p>
@@ -159,16 +159,16 @@ const viztaPanel = (
 
 const whiskerPanel = (
   <>
-    <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight sm:text-3xl">
+    <h2 className="font-[family-name:var(--font-archivo)] text-3xl font-bold tracking-tight sm:text-4xl">
       score the same contract twice — same result?
     </h2>
-    <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+    <p className="mt-4 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
       so honestly — yeah the LLM is probabilistic, we don&apos;t fight that. we just don&apos;t let it near the
       score<Footnote id="src-scoring" />. the model only argues about findings, a fixed rubric does the actual
       math<Footnote id="test-60" />. same findings, same number, every run. we ran the demo contract a bunch of
       times, kept landing on 60<Footnote id="chain-verdict" />. every time.
     </p>
-    <p className="mt-5 max-w-2xl border-l-2 border-emerald-500/30 pl-4 text-sm italic leading-relaxed text-slate-400">
+    <p className="mt-5 max-w-2xl border-l-2 border-emerald-500/30 pl-4 text-base italic leading-relaxed text-slate-400">
       referee vs. scoreboard, basically. the ref — the LLM, running at temperature 0<Footnote id="src-temp0" /> —
       gets to argue about what happened on the field. but nothing it says counts unless it points at an actual line
       of code — anything uncited gets thrown out, and counted<Footnote id="src-guard" />. the scoreboard — the
@@ -181,7 +181,7 @@ const whiskerPanel = (
     <RubricCalculator />
     <WidgetLabel>the whole pipeline, boxed in</WidgetLabel>
     <BoxedPipeline />
-    <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-400">
+    <p className="mt-8 max-w-2xl text-base leading-relaxed text-slate-400">
       one nuance, being straight: temp 0 doesn&apos;t mean the LLM writes the literal same words every time —
       there&apos;s still run-to-run wiggle in the prose (batching / floating-point on the provider&apos;s side, not
       something we control). what&apos;s pinned down is the score, not the essay. the rubric only reads structured
@@ -214,10 +214,10 @@ export default function JudgesPage() {
       {/* Hero (tight — the tabs carry the framing) */}
       <header className="reveal reveal-1 space-y-4 pt-8">
         <p className="section-tag">Mantle Turing Test Hackathon 2026 · Demo Day</p>
-        <h1 className="font-[family-name:var(--font-archivo)] text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+        <h1 className="font-[family-name:var(--font-archivo)] text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
           answers for the judges.
         </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-slate-300">
+        <p className="max-w-2xl text-lg leading-relaxed text-slate-300">
           demo day, three questions that actually matter. a slide wasn&apos;t going to cut it — so here&apos;s a
           real answer to each, one tab per judge. live interactive demos, real code, on-chain receipts. pick yours:
         </p>
@@ -231,8 +231,8 @@ export default function JudgesPage() {
       {/* Shared footer — go verify + reproduce */}
       <section className="mt-14 border-t border-border/60 pt-8">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="font-[family-name:var(--font-archivo)] text-xl font-bold tracking-tight">go check it yourself</h2>
-          <p className="text-sm text-slate-400">the contract, agent #{MAINNET.agentId}, the ratings, every verdict — all live on Mantle mainnet.</p>
+          <h2 className="font-[family-name:var(--font-archivo)] text-2xl font-bold tracking-tight">go check it yourself</h2>
+          <p className="text-base text-slate-400">the contract, agent #{MAINNET.agentId}, the ratings, every verdict — all live on Mantle mainnet.</p>
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" emphasis />
@@ -253,7 +253,7 @@ export default function JudgesPage() {
           <summary className="cursor-pointer font-mono text-[0.7rem] uppercase tracking-widest text-slate-500 hover:text-slate-300">
             reproduce it yourself
           </summary>
-          <pre className="mt-3 overflow-x-auto font-mono text-xs leading-relaxed text-slate-300">
+          <pre className="mt-3 overflow-x-auto font-mono text-sm leading-relaxed text-slate-300">
 {`// pull every rating for agent #${MAINNET.agentId} straight off the ReputationRegistry
 readAllFeedback(
   agentId: ${MAINNET.agentId},   // this agent
@@ -270,7 +270,7 @@ cd conatus && pnpm -C agent test`}
           </pre>
         </details>
 
-        <p className="mt-8 flex items-start gap-2 text-sm leading-relaxed text-slate-400">
+        <p className="mt-8 flex items-start gap-2 text-base leading-relaxed text-slate-400">
           <Handshake className="mt-0.5 size-4 shrink-0 text-emerald-400/80" aria-hidden />
           <span>genuinely — thanks for asking the hard questions. made the whole thing better. — RECTOR</span>
         </p>

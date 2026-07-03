@@ -12,7 +12,7 @@ export function SybilWeighting() {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-5">
       <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="inline-flex rounded-lg border border-slate-700 p-0.5 text-xs">
+        <div className="inline-flex rounded-lg border border-slate-700 p-0.5 text-sm">
           <button
             onClick={() => setWeighted(false)}
             className={cn("rounded-md px-3 py-1.5", !weighted ? "bg-slate-700 text-white" : "text-slate-400")}
@@ -26,7 +26,7 @@ export function SybilWeighting() {
             weight by reputation + proof
           </button>
         </div>
-        <p data-testid="sybil-score" className="font-[family-name:var(--font-archivo)] text-3xl font-extrabold tabular-nums text-emerald-400">
+        <p data-testid="sybil-score" className="font-[family-name:var(--font-archivo)] text-4xl font-extrabold tabular-nums text-emerald-400">
           {score}
         </p>
       </div>
@@ -37,7 +37,7 @@ export function SybilWeighting() {
             <span
               key={i}
               title={r.label}
-              className={cn("h-6 rounded px-2 text-xs leading-6 transition-opacity",
+              className={cn("h-6 rounded px-2 text-sm leading-6 transition-opacity",
                 r.proofOfConsumption ? "bg-emerald-500/20 text-emerald-200" : "bg-slate-700/60 text-slate-400",
                 muted && "opacity-20")}
             >
@@ -46,7 +46,7 @@ export function SybilWeighting() {
           );
         })}
       </div>
-      <p className="mt-3 text-xs text-slate-500">
+      <p className="mt-3 text-sm text-slate-500">
         {weighted
           ? "10 throwaway wallets have no standing + never consumed the audit → weight 0. only the real client counts."
           : "one real rating (90) drowned by 10 sybil wallets each screaming 100."}

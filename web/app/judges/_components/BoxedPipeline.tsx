@@ -14,7 +14,7 @@ function Stage({ icon: Icon, name, sub }: { icon: typeof Boxes; name: string; su
   return (
     <div className="flex-1 rounded-lg border border-slate-800 bg-slate-950/60 p-3 text-center">
       <Icon className="mx-auto size-4 text-emerald-400" aria-hidden />
-      <p className="mt-1 text-xs font-semibold text-slate-200">{name}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-200">{name}</p>
       <p className="text-[0.65rem] text-slate-500">{sub}</p>
     </div>
   );
@@ -33,17 +33,17 @@ export function BoxedPipeline() {
         <Stage icon={Calculator} name="rubric" sub="pure function" />
         <Stage icon={Link2} name="on-chain" sub="immutable" />
       </div>
-      <ul className="mt-4 space-y-1.5 text-sm">
+      <ul className="mt-4 space-y-1.5 text-base">
         {judged.map((o, i) => (
           <li key={i} className="flex items-center gap-2">
-            <span className={o.verdict === "dropped" ? "font-mono text-xs text-red-400 line-through" : "font-mono text-xs text-emerald-400"}>
+            <span className={o.verdict === "dropped" ? "font-mono text-sm text-red-400 line-through" : "font-mono text-sm text-emerald-400"}>
               {o.verdict}
             </span>
             <span className={o.verdict === "dropped" ? "text-slate-500 line-through" : "text-slate-300"}>{o.label}</span>
           </li>
         ))}
       </ul>
-      <p className="mt-3 flex items-center justify-between text-xs text-slate-500">
+      <p className="mt-3 flex items-center justify-between text-sm text-slate-500">
         <span><span data-testid="dropped-count" className="text-red-400">{dropped}</span> AI suggestion(s) discarded for missing citations</span>
         <span>final score <span data-testid="pipeline-score" className="font-mono text-emerald-400">{audit.score}</span></span>
       </p>

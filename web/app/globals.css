@@ -174,3 +174,5 @@
   text-transform: uppercase;
   color: oklch(0.88 0.13 172 / 75%);
 }
+
+@keyframes fadein { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }

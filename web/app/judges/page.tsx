@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowUpRight, Handshake } from "lucide-react";
-import { SITE_URL, explorerAddress, shortAddr } from "@/lib/constants";
+import { SITE_URL, shortAddr } from "@/lib/constants";
 import { MAINNET } from "@/app/judges/_data";
 import { Footnote } from "@/app/judges/_components/Footnote";
 import { References } from "@/app/judges/_components/References";
@@ -236,10 +236,14 @@ export default function JudgesPage() {
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" emphasis />
-          <ProofLink href={explorerAddress(MAINNET.attestation)} label="AuditAttestation contract" value={shortAddr(MAINNET.attestation)} />
+          <ProofLink
+            href={`${MAINNET.explorer}/address/${MAINNET.attestation}`}
+            label="AuditAttestation contract"
+            value={shortAddr(MAINNET.attestation)}
+          />
           <ProofLink href={GITHUB} label="Public source" value="github.com/RECTOR-LABS/conatus" />
           <ProofLink
-            href={explorerAddress(MAINNET.identityRegistry)}
+            href={`${MAINNET.explorer}/address/${MAINNET.identityRegistry}`}
             label="ERC-8004 identity"
             value={`agent #${MAINNET.agentId} · IdentityRegistry`}
           />

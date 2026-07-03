@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { BoxedPipeline } from "@/app/judges/_components/BoxedPipeline";
 import { Footnote } from "@/app/judges/_components/Footnote";
 import { RatingAnatomy } from "@/app/judges/_components/RatingAnatomy";
 import { References } from "@/app/judges/_components/References";
@@ -95,5 +96,15 @@ describe("SybilWeighting", () => {
     expect(score()).toBeGreaterThan(95);
     await user.click(screen.getByRole("button", { name: /weight by reputation/i }));
     expect(score()).toBe(90); // collapses to the one real rater
+  });
+});
+
+describe("BoxedPipeline", () => {
+  it("shows the four stages and drops an uncited LLM op (counted)", () => {
+    render(<BoxedPipeline />);
+    expect(screen.getByText(/slither/i)).toBeInTheDocument();
+    expect(screen.getByText(/rubric/i)).toBeInTheDocument();
+    expect(screen.getByTestId("dropped-count").textContent).toContain("1");
+    expect(screen.getByTestId("pipeline-score").textContent).toContain("60");
   });
 });

@@ -5,7 +5,9 @@ import { Footnote } from "@/app/judges/_components/Footnote";
 import { References } from "@/app/judges/_components/References";
 import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
 import { RunItAgain } from "@/app/judges/_components/RunItAgain";
-import { FOOTNOTES } from "@/app/judges/_data";
+import { SelfRatingSim } from "@/app/judges/_components/SelfRatingSim";
+import { FOOTNOTES, MAINNET } from "@/app/judges/_data";
+import { shortAddr } from "@/lib/constants";
 
 describe("Footnote", () => {
   it("renders a superscript anchor to the matching reference id", () => {
@@ -52,5 +54,16 @@ describe("RunItAgain", () => {
       expect(screen.getByTestId("run-score").textContent).toContain("60");
     }
     expect(screen.getByTestId("run-count").textContent).toContain("7"); // 1 initial + 6 clicks
+  });
+});
+
+describe("SelfRatingSim", () => {
+  it("reverts when the agent tries to rate itself, succeeds from a third-party wallet", async () => {
+    const user = userEvent.setup();
+    render(<SelfRatingSim />);
+    await user.click(screen.getByRole("button", { name: /rate as the agent/i }));
+    expect(screen.getByTestId("sim-result").textContent).toMatch(/MUST NOT be the agent owner/i);
+    await user.click(screen.getByRole("button", { name: /rate as a third-party/i }));
+    expect(screen.getByTestId("sim-result").textContent).toContain(shortAddr(MAINNET.rater));
   });
 });

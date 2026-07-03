@@ -58,15 +58,15 @@ export const SYBIL_DEMO: DemoRating[] = [
 
 export const FOOTNOTES: FootnoteDef[] = [
   { id: "eip-self", type: "eip", label: "EIP-8004 §Reputation Registry — feedback submitter must not be the agent owner/operator", href: `${EIP_URL}#reputation-registry` },
-  { id: "chain-rep", type: "chain", label: "Agent #115 reputation feedback on Mantle mainnet (ReputationRegistry)", href: `${MAINNET.explorer}/address/${MAINNET.reputationRegistry}` },
-  { id: "chain-owner", type: "chain", label: "Agent #115 owner wallet on Mantle mainnet", href: `${MAINNET.explorer}/address/${MAINNET.owner}` },
-  { id: "src-feedback", type: "source", label: "feedback.ts — keccak feedbackHash binds a rating to its exact payload", href: `${GH}/agent/src/feedback.ts#L51-L59` },
   { id: "src-give", type: "source", label: "giveFeedback.ts — rating must come from a wallet that is NOT the agent", href: `${GH}/agent/scripts/giveFeedback.ts#L15-L33` },
+  { id: "chain-rep", type: "chain", label: "Agent #115 reputation feedback on Mantle mainnet (ReputationRegistry)", href: `${MAINNET.explorer}/address/${MAINNET.reputationRegistry}` },
+  { id: "src-feedback", type: "source", label: "feedback.ts — keccak feedbackHash binds a rating to its exact payload", href: `${GH}/agent/src/feedback.ts#L51-L59` },
+  { id: "chain-owner", type: "chain", label: "Agent #115 owner wallet on Mantle mainnet", href: `${MAINNET.explorer}/address/${MAINNET.owner}` },
   { id: "src-scoring", type: "source", label: "scoring.ts — the deterministic risk rubric (pure function of findings)", href: `${GH}/agent/src/scoring.ts#L34-L41` },
   { id: "test-60", type: "test", label: "scoring.test.ts — CI pins computeRiskScore([critical/high]) === 60", href: `${GH}/agent/test/scoring.test.ts#L20-L22` },
-  { id: "src-temp0", type: "source", label: "synthesis.ts — temperature 0 and 'assign NO numeric risk score'", href: `${GH}/agent/src/synthesis.ts#L115-L127` },
-  { id: "src-guard", type: "source", label: "synthesis.ts — uncited LLM ops are dropped and counted (applyTriage)", href: `${GH}/agent/src/synthesis.ts#L47-L108` },
   { id: "chain-verdict", type: "chain", label: "Anchored audit verdict (riskScore 60) on Mantle mainnet", href: `${MAINNET.explorer}/tx/${MAINNET.verdictTx}` },
+  { id: "src-temp0", type: "source", label: "synthesis.ts — temperature 0 and 'assign NO numeric risk score'", href: `${GH}/agent/src/synthesis.ts#L186-L193` },
+  { id: "src-guard", type: "source", label: "synthesis.ts — uncited LLM ops are dropped and counted (applyTriage)", href: `${GH}/agent/src/synthesis.ts#L47-L108` },
 ];
 
 export function footnoteIndex(id: string): number {

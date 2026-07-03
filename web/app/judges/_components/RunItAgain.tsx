@@ -37,7 +37,7 @@ export function RunItAgain() {
 
       <div className="mt-4 flex items-center justify-between gap-4">
         <p className="truncate font-mono text-xs text-slate-500">
-          {history.map((s) => s).join(" · ")}
+          {history.join(" · ")}
         </p>
         <button
           onClick={() => setRun((r) => r + 1)}

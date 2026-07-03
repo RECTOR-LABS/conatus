@@ -290,8 +290,8 @@ cd conatus && pnpm -C agent test`}
           go check it yourself
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
-          everything above is live on Mantle mainnet right now — not a staged demo, not a testnet stand-in.
-          here&apos;s where to look:
+          the contract, the agent #115, the ratings, every anchored verdict — it&apos;s all live on Mantle
+          mainnet right now, not a testnet stand-in. here&apos;s where to look:
         </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <ProofLink href={SITE_URL} label="Live app · Mantle mainnet" value="conatus.rectorspace.com" emphasis />

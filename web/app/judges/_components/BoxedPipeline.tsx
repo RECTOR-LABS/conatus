@@ -1,5 +1,4 @@
 // web/app/judges/_components/BoxedPipeline.tsx
-"use client";
 import { Boxes, Bot, Calculator, Link2 } from "lucide-react";
 import { triageGuard, runAudit, type TriageOp } from "@/lib/judges";
 

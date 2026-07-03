@@ -7,6 +7,7 @@ import { References } from "@/app/judges/_components/References";
 import { RubricCalculator } from "@/app/judges/_components/RubricCalculator";
 import { RunItAgain } from "@/app/judges/_components/RunItAgain";
 import { SelfRatingSim } from "@/app/judges/_components/SelfRatingSim";
+import { SybilWeighting } from "@/app/judges/_components/SybilWeighting";
 import { FOOTNOTES, MAINNET, RATED_TARGET } from "@/app/judges/_data";
 import { shortAddr } from "@/lib/constants";
 
@@ -82,5 +83,17 @@ describe("RatingAnatomy", () => {
     // then tag2 — assert the rendered value is the actual RATED_TARGET, not just prose
     await user.click(screen.getByRole("button", { name: /tag2/i }));
     expect(screen.getByTestId("field-explainer").textContent).toContain(RATED_TARGET.slice(0, 12));
+  });
+});
+
+describe("SybilWeighting", () => {
+  it("toggles between an inflated naive average and the collapsed weighted score", async () => {
+    const user = userEvent.setup();
+    render(<SybilWeighting />);
+    // naive by default: inflated (>95)
+    const score = () => Number(screen.getByTestId("sybil-score").textContent!.replace(/\D/g, ""));
+    expect(score()).toBeGreaterThan(95);
+    await user.click(screen.getByRole("button", { name: /weight by reputation/i }));
+    expect(score()).toBe(90); // collapses to the one real rater
   });
 });

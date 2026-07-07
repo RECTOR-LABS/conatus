@@ -1,0 +1,143 @@
+# VCR Prune — keeps the Vercel Container Registry (VCR) `worker` repo at the last
+# N images so storage never climbs back to the 10 GB Hobby cap.
+#
+# Trigger: daily cron + manual workflow_dispatch. A real-time post-deploy webhook
+# would need a webhook→GitHub bridge (Israf for a solo Hobby project); a daily
+# sweep with keep=N is plenty since max transient accumulation = N + a day's deploys.
+#
+# REQUIRED REPO VARIABLES (Settings → Secrets and variables → Actions → Variables):
+#   VERCEL_TEAM_ID      e.g. team_ChFWVdEkY44d43iO4jyj1hxD
+#   VERCEL_PROJECT_ID   e.g. prj_PnO4vjzPyXwhvsc6PTEPpHc7m65J
+#   VCR_REPO            e.g. worker
+#   VCR_KEEP            e.g. 1            (how many newest images to retain; conatus = side project)
+#
+# REQUIRED REPO SECRET (Settings → Secrets and variables → Actions → Secrets):
+#   VERCEL_TOKEN        a Vercel API token (https://vercel.com/account/tokens)
+#                       with VCR scope (read + delete). NOT the CLI auth token.
+#
+# Safety: the image tagged with the current PRODUCTION deployment's commit SHA is
+# force-kept even if a preview burst pushed it out of the top N — live traffic is
+# never left orphaned.
+#
+# Restoring the prune is idempotent: re-running it converges to keep=N + production.
+
+name: VCR Prune
+
+on:
+  schedule:
+    # 06:00 UTC daily
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: "Number of newest images to retain (overrides VCR_KEEP)"
+        required: false
+        type: string
+
+concurrency:
+  group: vcr-prune-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Prune VCR images
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          TEAM_ID: ${{ vars.VERCEL_TEAM_ID }}
+          PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+          REPO: ${{ vars.VCR_REPO }}
+          KEEP: ${{ inputs.keep || vars.VCR_KEEP || '3' }}
+        run: |
+          set -euo pipefail
+          : "${VERCEL_TOKEN:?VERCEL_TOKEN secret is required}"
+          : "${TEAM_ID:?VERCEL_TEAM_ID variable is required}"
+          : "${PROJECT_ID:?VERCEL_PROJECT_ID variable is required}"
+          : "${REPO:?VCR_REPO variable is required}"
+          : "${KEEP:?VCR_KEEP must be set (repo var or dispatch input)}"
+
+          API="https://api.vercel.com"
+          AUTH="Authorization: Bearer ${VERCEL_TOKEN}"
+          QS="teamId=${TEAM_ID}&projectId=${PROJECT_ID}"
+
+          echo "::group::Config"
+          echo "team      = ${TEAM_ID}"
+          echo "project   = ${PROJECT_ID}"
+          echo "repo      = ${REPO}"
+          echo "keep (N)  = ${KEEP}"
+          echo "::endgroup::"
+
+          # 1. Identify the current PRODUCTION deployment's commit SHA (force-keep target).
+          echo "::group::Current production deployment"
+          PROD_SHA=$(curl -sS -H "${AUTH}" "${API}/v9/projects/${PROJECT_ID}?${QS}" \
+            | jq -er '.targets.production.meta.githubCommitSha // empty')
+          if [ -z "${PROD_SHA}" ]; then
+            echo "WARN: no production deployment found — proceeding without production protection."
+            PROD_TAG=""
+          else
+            # VCR tags are the first 12 chars of the commit SHA.
+            PROD_TAG="${PROD_SHA:0:12}"
+            echo "production commit = ${PROD_SHA}"
+            echo "production VCR tag = ${PROD_TAG}"
+          fi
+          echo "::endgroup::"
+
+          # 2. List all images in the repository.
+          echo "::group::Images in ${REPO}"
+          IMAGES_JSON=$(curl -sS -H "${AUTH}" "${API}/v1/vcr/repository/${REPO}/images?${QS}&limit=100")
+          COUNT=$(echo "${IMAGES_JSON}" | jq '.images | length')
+          echo "total images = ${COUNT}"
+          echo "${IMAGES_JSON}" | jq -r '.images[] | "  \(.createdAt) | \(.id) | tag=\(.tags[0] // "-") | \((.sizeInBytes/1048576*100|round)/100) MB"'
+          echo "::endgroup::"
+
+          # 3. Decide what to keep and what to delete.
+          #    keep_set = top-N by createdAt  UNION  {image tagged with PROD_TAG}
+          #    Build a newline-delimited list of KEEP image IDs, then subtract from all.
+          ALL_IDS=$(echo "${IMAGES_JSON}" | jq -r '.images | sort_by(.createdAt) | reverse | .[].id')
+
+          TOP_N_IDS=$(echo "${IMAGES_JSON}" \
+            | jq -r --argjson n "${KEEP}" '
+                .images | sort_by(.createdAt) | reverse | .[0:($n|tonumber)] | .[].id
+              ')
+
+          PROD_ID=""
+          if [ -n "${PROD_TAG}" ]; then
+            PROD_ID=$(echo "${IMAGES_JSON}" \
+              | jq -r --arg tag "${PROD_TAG}" '
+                  .images[] | select((.tags // []) | index($tag)) | .id
+                ' | head -n1)
+          fi
+
+          # Union keep set.
+          KEEP_IDS=$(printf '%s\n%s\n' "${TOP_N_IDS}" "${PROD_ID}" | grep -c . >/dev/null; { printf '%s\n' "${TOP_N_IDS}"; printf '%s\n' "${PROD_ID}"; } | awk 'NF' | sort -u)
+
+          echo "::group::Retention decision"
+          echo "KEEP (top ${KEEP} + production):"
+          echo "${KEEP_IDS}" | sed 's/^/  - /'
+          echo "::endgroup::"
+
+          # 4. Delete everything not in the keep set.
+          DELETED=0
+          for ID in ${ALL_IDS}; do
+            if echo "${KEEP_IDS}" | grep -qx "${ID}"; then
+              continue
+            fi
+            TAG=$(echo "${IMAGES_JSON}" | jq -r --arg id "${ID}" '.images[] | select(.id==$id) | (.tags[0] // "-")')
+            echo "Deleting ${ID} (tag=${TAG})..."
+            CODE=$(curl -sS -X DELETE -H "${AUTH}" -o /dev/null -w "%{http_code}" \
+              "${API}/v1/vcr/repository/${REPO}/images/${ID}?${QS}")
+            if [ "${CODE}" = "202" ] || [ "${CODE}" = "204" ] || [ "${CODE}" = "200" ]; then
+              echo "  -> deleted (HTTP ${CODE})"
+              DELETED=$((DELETED+1))
+            else
+              echo "  ::error::DELETE ${ID} failed (HTTP ${CODE})"
+            fi
+          done
+
+          echo "::group::Summary"
+          echo "total   = ${COUNT}"
+          echo "kept    = $(echo "${KEEP_IDS}" | grep -c . || true)"
+          echo "deleted = ${DELETED}"
+          echo "::endgroup::"

@@ -3,6 +3,8 @@
 </p>
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Grand_Champion-Mantle_2026-fbbf24?style=flat-square&labelColor=0a0e0d" alt="Grand Champion — Mantle Turing Test Hackathon 2026">
+  <img src="https://img.shields.io/badge/Best_in_Track-Dev_Tool-5eead4?style=flat-square&labelColor=0a0e0d" alt="Best in Track — Dev Tool">
   <a href="https://conatus.rectorspace.com"><img src="https://img.shields.io/badge/live-conatus.rectorspace.com-5eead4?style=flat-square&labelColor=0a0e0d" alt="Live app"></a>
   <a href="https://mantlescan.xyz/address/0x94f22E008d0a8825850491170d97ba487Ed9E040"><img src="https://img.shields.io/badge/Mantle-mainnet%205000-5eead4?style=flat-square&labelColor=0a0e0d" alt="Mantle mainnet 5000"></a>
   <img src="https://img.shields.io/badge/ERC--8004-agent%20%23115-5eead4?style=flat-square&labelColor=0a0e0d" alt="ERC-8004 agent #115">
@@ -20,6 +22,11 @@
   <a href="https://mantlescan.xyz/address/0x94f22E008d0a8825850491170d97ba487Ed9E040">Contract on Mantlescan</a> &nbsp;·&nbsp;
   <a href="#run-it-yourself">Run it yourself</a>
 </p>
+
+> **Grand Champion — Mantle Turing Test Hackathon 2026.** Conatus took the top
+> prize out of all submissions ($9,000) **and** Best in Track — Dev Tool ($8,500),
+> $17,500 combined. Hosted on Mantle with Bybit, Byreal, and the Blockchain for
+> Good Alliance.
 
 > *Conatus* (Spinoza): the innate drive of a thing to persist in its own being — an agent that reasons, acts, and leaves a permanent trace.
 

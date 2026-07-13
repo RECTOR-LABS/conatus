@@ -213,7 +213,7 @@ export default function JudgesPage() {
 
       {/* Hero (tight — the tabs carry the framing) */}
       <header className="reveal reveal-1 space-y-4 pt-8">
-        <p className="section-tag">Mantle Turing Test Hackathon 2026 · Demo Day</p>
+        <p className="section-tag">Mantle Turing Test Hackathon 2026 · Grand Champion & Best in Track (Dev Tool)</p>
         <h1 className="font-[family-name:var(--font-archivo)] text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
           answers for the judges.
         </h1>

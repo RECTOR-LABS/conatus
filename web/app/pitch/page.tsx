@@ -28,7 +28,7 @@ const VIDEO_URL = "https://jtystnlfdvkgnvne.public.blob.vercel-storage.com/conat
 export const metadata: Metadata = {
   title: "Conatus — pitch · the first audit agent native to Mantle's ERC-8004 stack",
   description:
-    "Every Conatus verdict is an on-chain, identity-bound, reputation-accruing record. Live on Mantle mainnet. Mantle Turing Test Hackathon 2026.",
+    "Every Conatus verdict is an on-chain, identity-bound, reputation-accruing record. Live on Mantle mainnet. Grand Champion & Best in Track (Dev Tool) — Mantle Turing Test Hackathon 2026.",
   openGraph: {
     title: "Conatus — on-chain AI audit agent for Mantle",
     description:
@@ -106,7 +106,7 @@ export default function PitchPage() {
 
       {/* Hero */}
       <header className="reveal reveal-1 space-y-5 pt-10">
-        <p className="section-tag">Mantle Turing Test Hackathon 2026 · AI DevTools</p>
+        <p className="section-tag">Grand Champion · Best in Track (Dev Tool) — Mantle Turing Test Hackathon 2026</p>
         <h1 className="font-[family-name:var(--font-archivo)] text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
           The first audit agent native to <span className="text-primary">Mantle&apos;s ERC-8004 stack.</span>
         </h1>
@@ -270,7 +270,7 @@ export default function PitchPage() {
       <footer className="mt-14 border-t border-border/60 pt-5">
         <p className="font-mono text-[11px] leading-relaxed text-muted-foreground/70">
           First-pass triage, not a formal audit · single-file Solidity · AuditAttestation deploys to the same address on
-          both chains (deterministic, nonce 0). Built for the Mantle Turing Test Hackathon 2026.
+          both chains (deterministic, nonce 0). Built for the Mantle Turing Test Hackathon 2026 — Grand Champion & Best in Track (Dev Tool).
         </p>
       </footer>
     </main>

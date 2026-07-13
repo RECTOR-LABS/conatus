@@ -50,6 +50,9 @@ export default function Home() {
         <p className="font-mono text-[11px] text-muted-foreground/70">
           first-pass triage, not a formal audit · single-file Solidity · {CHAIN_NAME}
         </p>
+        <p className="font-mono text-[11px] tracking-wide text-primary/80">
+          Grand Champion · Best in Track (Dev Tool) — Mantle Turing Test Hackathon 2026
+        </p>
       </header>
 
       <SourceForm onSubmit={handleSubmit} disabled={running} />

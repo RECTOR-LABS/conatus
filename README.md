@@ -200,4 +200,4 @@ cd contracts && forge test    # 10 — attest access control, validation, getAtt
 
 MIT — see [`LICENSE`](./LICENSE). Part of the **Conatus / Conclave / Wisp** agentic-EVM campaign on a shared core ([`CORE.md`](./CORE.md)). Design spec: [`SPEC.md`](./SPEC.md) · build plan: [`PLAN.md`](./PLAN.md).
 
-<sub>Built for the Mantle "Turing Test" Hackathon 2026 · AI DevTools track · #MantleAIHackathon</sub>
+<sub>Grand Champion & Best in Track (Dev Tool) — Mantle “Turing Test” Hackathon 2026 · #MantleAIHackathon</sub>

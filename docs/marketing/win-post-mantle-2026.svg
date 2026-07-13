@@ -54,7 +54,7 @@
 
   <!-- proof strip -->
   <line x1="120" y1="568" x2="1080" y2="568" stroke="#ffffff" stroke-opacity="0.1"/>
-  <text x="600" y="600" text-anchor="middle" class="m" font-size="15" fill="#cfd8d4">ERC-8004 AGENT #115 <tspan fill="#5eead4">·</tspan> LIVE ON MANTLE MAINNET <tspan fill="#5eead4">·</tspan> 98 TESTS <tspan fill="#5eead4">·</tspan> ON-CHAIN VERDICTS</text>
+  <text x="600" y="600" text-anchor="middle" class="m" font-size="15" fill="#cfd8d4">ERC-8004 AGENT #115 <tspan fill="#5eead4">·</tspan> LIVE ON MANTLE MAINNET <tspan fill="#5eead4">·</tspan> SOLE ATTESTER <tspan fill="#5eead4">·</tspan> ON-CHAIN VERDICTS</text>
 
   <!-- footer links -->
   <text x="600" y="644" text-anchor="middle" class="m" font-size="14" letter-spacing="2" fill="#7e8c86">conatus.rectorspace.com   ·   github.com/RECTOR-LABS/conatus</text>

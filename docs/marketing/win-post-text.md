@@ -17,7 +17,7 @@ What shipped:
 
 - Live on Mantle mainnet — every verdict recomputable, fees paid in real MNT
 - ERC-8004 agent #115 — identity-bound, reputation-accruing across audits
-- 98 tests passing across the agent, contracts, and on-chain anchoring
+- One writer — the agent wallet is the sole attester; no third party can spoof or overwrite a verdict
 - Slither static analysis × Mantle gas heuristics × LLM synthesis
 
 Grand Champion out of all submissions, plus Best in Track for Dev Tool — $17,500 combined. Built solo for the hackathon.
@@ -39,7 +39,7 @@ a record you can verify, not a claim you trust.
 
 - live on mantle mainnet
 - ERC-8004 agent #115
-- 98 tests passing
+- sole attester — one writer, no third party can spoof a verdict
 - slither × mantle gas heuristics × LLM synthesis
 
 $17,500 combined. built solo.

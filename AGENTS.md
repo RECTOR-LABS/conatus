@@ -29,7 +29,7 @@
 
 **`/judges` page** (`web/app/judges/`, shipped PR #8 → `e20ef93`): interactive, cited answers to 3 Demo-Day judge questions; per-judge tabs (William/Vizta/Whisker); 6 island widgets; pure logic in `web/lib/judges.ts` (mirrors `agent/src/scoring.ts` 1:1). ALL explorer links use hardcoded `MAINNET.explorer` (mantlescan.xyz) — do NOT switch to env-driven `explorerAddress()` (it defaults to sepolia when `NEXT_PUBLIC_EXPLORER_URL` unset). Honesty invariants: sybil labeled live-vs-roadmap; 87 (rated audit `RATED_TARGET 0xda6bf76b83de…565d`) vs 60 (demo Vault `0x8d88b4…5f67`, anchor `0x072811b7…`) kept STRICTLY separate — never conflate.
 
-**Latest handoff (detailed):** `~/Documents/secret/strategy/conatus/session-handoff-2026-07-03.md`. Older handoffs + spec/plan docs in the same dir. Read the latest handoff first when resuming.
+**Latest handoff (detailed):** `~/Documents/secret/strategy/conatus/session-handoff-2026-07-19.md` (LLM→GLM-5.2/Ollama + IPFS/Pinata, broadcast fixed, GUI verified). Older handoffs + spec/plan docs in the same dir. Read the latest handoff first when resuming.
 
 ## Open work (post-hackathon — RECTOR's pick)
 

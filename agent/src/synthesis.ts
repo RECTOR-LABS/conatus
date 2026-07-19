@@ -226,10 +226,10 @@ async function callWithRetry(client: OpenAI, model: string, messages: ChatMsg[])
 export async function synthesizeAudit(base: AuditReport, source: string, opts: SynthesizeOptions = {}): Promise<AuditReport> {
   const apiKey = opts.apiKey ?? process.env.LLM_API_KEY;
   if (isPlaceholderKey(apiKey)) {
-    throw new Error("LLM_API_KEY missing or placeholder — set a real OpenRouter key in .env");
+    throw new Error("LLM_API_KEY missing or placeholder — set a real LLM provider key in .env");
   }
   const model = opts.model ?? process.env.LLM_MODEL ?? DEFAULT_MODEL;
-  const client = opts.client ?? new OpenAI({ apiKey, baseURL: opts.baseURL ?? DEFAULT_BASE_URL });
+  const client = opts.client ?? new OpenAI({ apiKey, baseURL: opts.baseURL ?? (process.env.LLM_BASE_URL || DEFAULT_BASE_URL) });
   const now = opts.now ?? (() => new Date());
 
   const messages: ChatMsg[] = [

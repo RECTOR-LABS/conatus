@@ -68,9 +68,9 @@ A Next.js frontend (Vercel) takes Solidity source and calls the **agent service*
 Given a contract, the agent runs the entire loop itself — tool calls, triage, scoring, the IPFS pin, and the on-chain write — and signs the result with its own identity. No human picks the findings or the score. It's **deterministic where it counts, LLM where it helps, and it never lies when a tool breaks.**
 
 1. **`runAudit` — deterministic.** Runs `slither_scan` (static analysis) and `mantle_gas_review` (Mantle gas/DA heuristics) in parallel, merges their findings, and computes `targetHash = keccak256(canonicalized source)` — the on-chain key, stable across trivial formatting.
-2. **`synthesis` — LLM · Policy A.** Claude Sonnet 4.6 (via OpenRouter, `temperature: 0`) triages the tool output through a single constrained tool-call. It may **reclassify** a severity (original preserved in `adjustedFrom`), **dedup** a finding into an equal-or-higher one, or **add** a finding the tools missed — *but only with a cited line range.* It assigns **no score**, and any operation without a citation is discarded and counted.
+2. **`synthesis` — LLM · Policy A.** GLM-5.2 (via Ollama Cloud, `temperature: 0`) triages the tool output through a single constrained tool-call. It may **reclassify** a severity (original preserved in `adjustedFrom`), **dedup** a finding into an equal-or-higher one, or **add** a finding the tools missed — *but only with a cited line range.* It assigns **no score**, and any operation without a citation is discarded and counted.
 3. **`scoring` — deterministic.** A published rubric maps findings → `riskScore` 0–100, where **higher = riskier** (`critical 60 · high 25 · medium 10 · low 3`; gas/quality notes carry zero risk weight), each discounted by confidence. Recomputable by anyone, from the findings alone.
-4. **`anchor`.** The report is pinned to IPFS (`findingsURI` + keccak hash; deterministic `data:` fallback), then `AuditAttestation.attest(targetHash, findingsURI, riskScore, agentId)` writes the verdict to Mantle — simulated first so a would-be revert fails fast, and a mined-but-reverted tx is never mistaken for success.
+4. **`anchor`.** The report is pinned to IPFS (`findingsURI` + keccak hash); a `data:` URI fallback exists but **exceeds Mantle's per-tx gas allowance** for normal-sized reports, so a Pinata JWT (`IPFS_PINNING_JWT`) is required for production anchoring. Then `AuditAttestation.attest(targetHash, findingsURI, riskScore, agentId)` writes the verdict to Mantle — simulated first so a would-be revert fails fast, and a mined-but-reverted tx is never mistaken for success.
 
 > **The integrity rule:** if Slither or the gas tool errors, the report is marked `INCOMPLETE` with an explicit reason — *never a fabricated clean pass.* Absence of findings after a tool failure is never read as "safe."
 
@@ -115,7 +115,7 @@ Everything below is **live on Mantle mainnet (chain 5000)** and verifiable right
 <details>
 <summary><b>Prerequisites &amp; full local setup</b></summary>
 
-**Prerequisites:** Node 20+, [pnpm](https://pnpm.io) 10, [Foundry](https://book.getfoundry.sh) (`forge`/`cast`), Python 3 + [Slither](https://github.com/crytic/slither) (`pip install slither-analyzer`) and `solc`, an [OpenRouter](https://openrouter.ai) API key, and a Mantle wallet funded with MNT for anchoring. IPFS pinning (a Pinata JWT) is optional — the agent falls back to a deterministic `data:` URI.
+**Prerequisites:** Node 20+, [pnpm](https://pnpm.io) 10, [Foundry](https://book.getfoundry.sh) (`forge`/`cast`), Python 3 + [Slither](https://github.com/crytic/slither) (`pip install slither-analyzer`) and `solc`, an [Ollama Cloud](https://ollama.com) API key (for the GLM-5.2 triage model), and a Mantle wallet funded with MNT for anchoring. IPFS pinning via [Pinata](https://pinata.cloud) (a `IPFS_PINNING_JWT`) is required for on-chain anchoring — the `data:` URI fallback exceeds Mantle's per-tx gas allowance for normal reports.
 
 ```bash
 git clone https://github.com/RECTOR-LABS/conatus

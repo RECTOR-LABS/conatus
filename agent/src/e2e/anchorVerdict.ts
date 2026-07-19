@@ -56,7 +56,7 @@ async function main(): Promise<void> {
   const base = await runAudit(VAULT, { contractName: "Vault", slitherBin });
   console.log(`     incomplete=${base.incomplete}  deterministic riskScore=${base.riskScore}  findings=${base.findings.length}`);
 
-  console.log("2/3  LLM synthesis (OpenRouter)…");
+  console.log("2/3  LLM synthesis…");
   const synth = await synthesizeAudit(base, VAULT);
   console.log(`     model=${synth.model}  riskScore=${synth.riskScore}  findings=${synth.findings.length}`);
   console.log(`     ${synth.summary}`);

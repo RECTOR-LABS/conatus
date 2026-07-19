@@ -22,7 +22,7 @@
 **Status: SHIPPED + WON.** 🏆 Grand Champion — Mantle Turing Test Hackathon 2026 + Best in Track (Dev Tool). Repo `main` = `7aaeef5`, clean, in sync with `origin/main`. **138 tests passing** (67 web / 61 agent / 10 contracts). Site LIVE at https://conatus.rectorspace.com (`/judges` → 200).
 
 **Prod infra (DO NOT rebuild — all verified LIVE):**
-- Prod fully on **Vercel** (merged to `main` → auto-deploy). Prod LLM = `anthropic/claude-sonnet-5`.
+- Prod fully on **Vercel** (merged to `main` → auto-deploy). Prod LLM = `anthropic/claude-sonnet-5` (via OpenRouter). Dev LLM = `glm-5.2` via Ollama Cloud (pending key; switched 2026-07-15) — prod flip pending RECTOR sign-off.
 - Contract `AuditAttestation 0x94f22E008d0a8825850491170d97ba487Ed9E040` on Mantle mainnet (5000), ERC-8004 agent #115.
   - IdentityRegistry `0x8004A169FB4a3325136EB29fA0ceB6D2e539a432` · ReputationRegistry `0x8004BAa17C55a88189AE136b182e5fdA19dE9b63`.
   - Agent #115 owner `0x6BB4…631F`. Agent wallet ~2.52 MNT.
@@ -55,6 +55,8 @@ curl -s -o /dev/null -w '%{http_code}\n' https://conatus.rectorspace.com/judges 
 ## Gotchas
 
 - **BSD (macOS) `sed` doesn't support `\b`** — use `[[:<:]]`/`[[:>:]]` or space-delimited exact matches.
+- LLM is OpenAI-compatible via `openai` SDK: `LLM_API_KEY` + `LLM_MODEL` + `LLM_BASE_URL` (defaults in `agent/src/synthesis.ts`: `anthropic/claude-sonnet-5` @ `https://openrouter.ai/api/v1` — env vars override at runtime; `LLM_BASE_URL` is read with empty-string guard → falls back to the OpenRouter default if unset/empty). Switching provider = env-only for `LLM_MODEL`/`LLM_BASE_URL` (no code change once the env-read fix is in). Current dev target: Ollama Cloud `glm-5.2` @ `https://ollama.com/v1` (supports `tools`/function-calling, required by `synthesis.ts`). **Gotcha:** use `https://ollama.com/v1`, NOT `https://api.ollama.com/v1` — the latter 301-redirects to `ollama.com` and the OpenAI SDK strips the `Authorization` header on cross-host redirects → 401. Model id is `glm-5.2` (the `:cloud` suffix is a CLI routing tag, invalid on the API). **Fix landed 2026-07-15:** `synthesis.ts` previously hardcoded the base URL to OpenRouter and ignored `LLM_BASE_URL` (latent bug — prod only worked because the default matched); now reads env.
+- **Real audit verified** with GLM-5.2 via `E2E_DRY_RUN=1 pnpm -C agent e2e` (audit → synthesis → simulate, no broadcast): caught the VAULT reentrancy, added a Slither-missed access-control finding, respected the citation guardrail.
 - `vercel env pull` reads `LLM_MODEL`/`LLM_BASE_URL` back as `""` (write-only-readback quirk) — verify via live `report.model`, NOT pull. Rollback lever = prod `LLM_MODEL` env.
 - Cold start ~30-40s on first audit after idle (`preflight.sh --warm` to pre-warm).
 - Merging to `main` auto-deploys Vercel prod; container (Slither/Foundry) rebuild + deploy ~105s.

@@ -1,0 +1,31 @@
+# Weekly keep-alive + health probe for the Upstash Redis backing the audit API.
+#
+# Why: the free-tier Upstash DB (true-honeybee-156074) was deleted after ~5 weeks
+# idle (2026-08-29 incident — /api/audit 500, DNS NXDOMAIN). A GET to a nonexistent
+# job id always touches Redis (jobStore.getJob) and must return 404 — proving both
+# the route and Redis are alive, and keeping the DB active so idle cleanup never
+# triggers again.
+#
+# On failure the workflow run fails → GitHub notifies (email/Watch tab). Check
+# vercel runtime logs + Upstash console if red.
+
+name: redis-keepalive
+
+on:
+  schedule:
+    - cron: "17 9 * * 1" # Mondays 09:17 UTC
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Poll audit API (expect 404 = route + Redis alive)
+        run: |
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 \
+            "https://conatus.rectorspace.com/api/audit/00000000-0000-0000-0000-000000000000")
+          echo "GET /api/audit/<nil-uuid> -> $code"
+          case "$code" in
+            404|400) echo "OK: route + Redis healthy";;
+            *) echo "FAIL: expected 404/400, got $code — audit API or Upstash Redis is down"; exit 1;;
+          esac

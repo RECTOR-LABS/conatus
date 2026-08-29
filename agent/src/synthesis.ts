@@ -108,7 +108,7 @@ export function applyTriage(base: Finding[], output: SynthesisOutput): ApplyResu
 }
 
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_MODEL = "anthropic/claude-sonnet-5";
+const DEFAULT_MODEL = "z-ai/glm-5.3-flash";
 const INCOMPLETE_PREFIX =
   "INCOMPLETE AUDIT — a required tool failed; the absence of issues here is NOT a pass. ";
 

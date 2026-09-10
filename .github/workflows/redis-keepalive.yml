@@ -23,7 +23,7 @@ jobs:
       - name: Poll audit API (expect 404 = route + Redis alive)
         run: |
           code=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 30 \
-            "https://conatus.rectorspace.com/api/audit/00000000-0000-0000-0000-000000000000")
+            "https://conatus-three.vercel.app/api/audit/00000000-0000-0000-0000-000000000000")
           echo "GET /api/audit/<nil-uuid> -> $code"
           case "$code" in
             404|400) echo "OK: route + Redis healthy";;
